@@ -13,7 +13,7 @@ from reversebox.common.logger import get_logger
 
 from src.GUI.GUI_main import EAManGui
 
-VERSION_NUM = "v0.1.5"
+VERSION_NUM = "v0.1.6"
 
 logger = get_logger("main")
 
