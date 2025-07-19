@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-from src.GUI.GUI_file_header_info_box import GuiFileHeaderInfoBox
-from src.GUI.GUI_shape_header_info_box import GuiShapeHeaderInfoBox
+from src.GUI.GUI_info_box_file_header import GuiFileHeaderInfoBox
+from src.GUI.GUI_info_box_font_flags import GuiFontFlagsInfoBox
+from src.GUI.GUI_info_box_shape_header import GuiShapeHeaderInfoBox
 
 
 class GuiTabController(tk.Frame):
@@ -20,7 +21,8 @@ class GuiTabController(tk.Frame):
         self.tab_controller_box.add(self.tab2_shape_header, text="Shape Header")
         self.tab_controller_box.add(self.tab3_font_flags, text="Font Flags")
 
-        self.tab_controller_box.select(1)
+        self.tab_controller_box.select(2)
 
         self.file_header_info_box = GuiFileHeaderInfoBox(self.tab1_file_header, gui_main)
         self.shape_header_info_box = GuiShapeHeaderInfoBox(self.tab2_shape_header, gui_main)
+        self.font_flags_info_box = GuiFontFlagsInfoBox(self.tab3_font_flags, gui_main)
