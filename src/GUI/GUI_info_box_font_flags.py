@@ -19,5 +19,5 @@ class GuiFontFlagsInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.ff_text_flags_dec.place(x=105, y=5, width=80, height=20)
+        self.ff_text_flags_dec.place(x=105, y=5, width=120, height=20)
         self.ff_text_flags_dec.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))

@@ -19,7 +19,7 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_sign.place(x=90, y=5, width=80, height=20)
+        self.fh_text_sign.place(x=90, y=5, width=120, height=20)
         self.fh_text_sign.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Total file size
@@ -30,7 +30,7 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_total_f_size.place(x=90, y=35, width=80, height=20)
+        self.fh_text_total_f_size.place(x=90, y=35, width=120, height=20)
         self.fh_text_total_f_size.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Version
@@ -41,7 +41,7 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_version.place(x=90, y=65, width=80, height=20)
+        self.fh_text_version.place(x=90, y=65, width=120, height=20)
         self.fh_text_version.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Number of Characters
@@ -52,7 +52,7 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_number_of_characters.place(x=90, y=95, width=80, height=20)
+        self.fh_text_number_of_characters.place(x=90, y=95, width=120, height=20)
         self.fh_text_number_of_characters.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Font Flags
@@ -63,18 +63,18 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_font_flags.place(x=90, y=125, width=80, height=20)
+        self.fh_text_font_flags.place(x=90, y=125, width=120, height=20)
         self.fh_text_font_flags.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Char. Info Offset
-        self.fh_label_char_info_offset = tk.Label(self.file_header_labelframe, text="Char. Info:", anchor="w")
-        self.fh_label_char_info_offset.place(x=5, y=155, width=90, height=20)
+        self.fh_label_char_info_offset = tk.Label(self.file_header_labelframe, text="Char. Off.:", anchor="w")
+        self.fh_label_char_info_offset.place(x=5, y=155, width=100, height=20)
         self.fh_text_char_info_offset = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_char_info_offset.place(x=90, y=155, width=80, height=20)
+        self.fh_text_char_info_offset.place(x=90, y=155, width=120, height=20)
         self.fh_text_char_info_offset.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Center X
@@ -85,7 +85,7 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_center_x.place(x=310, y=5, width=80, height=20)
+        self.fh_text_center_x.place(x=310, y=5, width=120, height=20)
         self.fh_text_center_x.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Center Y
@@ -96,7 +96,7 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_center_y.place(x=310, y=35, width=80, height=20)
+        self.fh_text_center_y.place(x=310, y=35, width=120, height=20)
         self.fh_text_center_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Ascent
@@ -107,7 +107,7 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_ascent.place(x=310, y=65, width=80, height=20)
+        self.fh_text_ascent.place(x=310, y=65, width=120, height=20)
         self.fh_text_ascent.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Descent
@@ -118,27 +118,27 @@ class GuiFileHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_descent.place(x=310, y=95, width=80, height=20)
+        self.fh_text_descent.place(x=310, y=95, width=120, height=20)
         self.fh_text_descent.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Kerning Table Offset
-        self.fh_label_kerning_table_offset = tk.Label(self.file_header_labelframe, text="Kern. Info:", anchor="w")
+        self.fh_label_kerning_table_offset = tk.Label(self.file_header_labelframe, text="Kern. Off.:", anchor="w")
         self.fh_label_kerning_table_offset.place(x=235, y=125, width=90, height=20)
         self.fh_text_kerning_table_offset = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_kerning_table_offset.place(x=310, y=125, width=80, height=20)
+        self.fh_text_kerning_table_offset.place(x=310, y=125, width=120, height=20)
         self.fh_text_kerning_table_offset.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Shape Header Offset
-        self.fh_label_shape_header_offset = tk.Label(self.file_header_labelframe, text="Shape. Info:", anchor="w")
+        self.fh_label_shape_header_offset = tk.Label(self.file_header_labelframe, text="Shape Off.:", anchor="w")
         self.fh_label_shape_header_offset.place(x=235, y=155, width=90, height=20)
         self.fh_text_shape_header_offset = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_shape_header_offset.place(x=310, y=155, width=80, height=20)
+        self.fh_text_shape_header_offset.place(x=310, y=155, width=120, height=20)
         self.fh_text_shape_header_offset.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))

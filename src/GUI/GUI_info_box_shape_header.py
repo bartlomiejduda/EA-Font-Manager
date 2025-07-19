@@ -19,7 +19,7 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_record_id.place(x=105, y=5, width=80, height=20)
+        self.sh_text_record_id.place(x=105, y=5, width=105, height=20)
         self.sh_text_record_id.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Next Binary Attachment Offset
@@ -30,7 +30,7 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_next_binary_attachment_offset.place(x=105, y=35, width=80, height=20)
+        self.sh_text_next_binary_attachment_offset.place(x=105, y=35, width=105, height=20)
         self.sh_text_next_binary_attachment_offset.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Image Width
@@ -41,7 +41,7 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_image_width.place(x=105, y=65, width=80, height=20)
+        self.sh_text_image_width.place(x=105, y=65, width=105, height=20)
         self.sh_text_image_width.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Image Height
@@ -52,7 +52,7 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_image_height.place(x=105, y=95, width=80, height=20)
+        self.sh_text_image_height.place(x=105, y=95, width=105, height=20)
         self.sh_text_image_height.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Center X
@@ -63,7 +63,7 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_center_x.place(x=310, y=5, width=80, height=20)
+        self.sh_text_center_x.place(x=310, y=5, width=120, height=20)
         self.sh_text_center_x.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Center Y
@@ -74,7 +74,7 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_center_y.place(x=310, y=35, width=80, height=20)
+        self.sh_text_center_y.place(x=310, y=35, width=120, height=20)
         self.sh_text_center_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Shape X
@@ -85,7 +85,7 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_shape_x.place(x=310, y=65, width=80, height=20)
+        self.sh_text_shape_x.place(x=310, y=65, width=120, height=20)
         self.sh_text_shape_x.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Shape Y
@@ -96,5 +96,5 @@ class GuiShapeHeaderInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.sh_text_shape_y.place(x=310, y=95, width=80, height=20)
+        self.sh_text_shape_y.place(x=310, y=95, width=120, height=20)
         self.sh_text_shape_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
