@@ -12,89 +12,89 @@ class GuiShapeHeaderInfoBox(tk.Frame):
         self.file_header_labelframe.place(x=5, y=5, width=475, height=215)
 
         # Record ID
-        self.fh_label_record_id = tk.Label(self.file_header_labelframe, text="Record ID:", anchor="w")
-        self.fh_label_record_id.place(x=5, y=5, width=60, height=20)
-        self.fh_text_record_id = tk.Text(
+        self.sh_label_record_id = tk.Label(self.file_header_labelframe, text="Record ID:", anchor="w")
+        self.sh_label_record_id.place(x=5, y=5, width=60, height=20)
+        self.sh_text_record_id = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_record_id.place(x=105, y=5, width=80, height=20)
-        self.fh_text_record_id.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_record_id.place(x=105, y=5, width=80, height=20)
+        self.sh_text_record_id.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Next Binary Attachment Offset
-        self.fh_label_next_binary_attachment_offset = tk.Label(self.file_header_labelframe, text="Next Bin. Offset:", anchor="w")
-        self.fh_label_next_binary_attachment_offset.place(x=5, y=35, width=90, height=20)
-        self.fh_text_next_binary_attachment_offset = tk.Text(
+        self.sh_label_next_binary_attachment_offset = tk.Label(self.file_header_labelframe, text="Next Bin. Offset:", anchor="w")
+        self.sh_label_next_binary_attachment_offset.place(x=5, y=35, width=90, height=20)
+        self.sh_text_next_binary_attachment_offset = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_next_binary_attachment_offset.place(x=105, y=35, width=80, height=20)
-        self.fh_text_next_binary_attachment_offset.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_next_binary_attachment_offset.place(x=105, y=35, width=80, height=20)
+        self.sh_text_next_binary_attachment_offset.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Image Width
-        self.fh_label_image_width = tk.Label(self.file_header_labelframe, text="Image Width:", anchor="w")
-        self.fh_label_image_width.place(x=5, y=65, width=90, height=20)
-        self.fh_text_image_width = tk.Text(
+        self.sh_label_image_width = tk.Label(self.file_header_labelframe, text="Image Width:", anchor="w")
+        self.sh_label_image_width.place(x=5, y=65, width=90, height=20)
+        self.sh_text_image_width = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_image_width.place(x=105, y=65, width=80, height=20)
-        self.fh_text_image_width.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_image_width.place(x=105, y=65, width=80, height=20)
+        self.sh_text_image_width.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Image Height
-        self.fh_label_image_height = tk.Label(self.file_header_labelframe, text="Image Height:", anchor="w")
-        self.fh_label_image_height.place(x=5, y=95, width=90, height=20)
-        self.fh_text_image_height = tk.Text(
+        self.sh_label_image_height = tk.Label(self.file_header_labelframe, text="Image Height:", anchor="w")
+        self.sh_label_image_height.place(x=5, y=95, width=90, height=20)
+        self.sh_text_image_height = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_image_height.place(x=105, y=95, width=80, height=20)
-        self.fh_text_image_height.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_image_height.place(x=105, y=95, width=80, height=20)
+        self.sh_text_image_height.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Center X
-        self.fh_label_center_x = tk.Label(self.file_header_labelframe, text="Center X:", anchor="w")
-        self.fh_label_center_x.place(x=235, y=5, width=90, height=20)
-        self.fh_text_center_x = tk.Text(
+        self.sh_label_center_x = tk.Label(self.file_header_labelframe, text="Center X:", anchor="w")
+        self.sh_label_center_x.place(x=235, y=5, width=90, height=20)
+        self.sh_text_center_x = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_center_x.place(x=310, y=5, width=80, height=20)
-        self.fh_text_center_x.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_center_x.place(x=310, y=5, width=80, height=20)
+        self.sh_text_center_x.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Center Y
-        self.fh_label_center_y = tk.Label(self.file_header_labelframe, text="Center Y:", anchor="w")
-        self.fh_label_center_y.place(x=235, y=35, width=90, height=20)
-        self.fh_text_center_y = tk.Text(
+        self.sh_label_center_y = tk.Label(self.file_header_labelframe, text="Center Y:", anchor="w")
+        self.sh_label_center_y.place(x=235, y=35, width=90, height=20)
+        self.sh_text_center_y = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_center_y.place(x=310, y=35, width=80, height=20)
-        self.fh_text_center_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_center_y.place(x=310, y=35, width=80, height=20)
+        self.sh_text_center_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Shape X
-        self.fh_label_shape_x = tk.Label(self.file_header_labelframe, text="Shape X:", anchor="w")
-        self.fh_label_shape_x.place(x=235, y=65, width=90, height=20)
-        self.fh_text_shape_x = tk.Text(
+        self.sh_label_shape_x = tk.Label(self.file_header_labelframe, text="Shape X:", anchor="w")
+        self.sh_label_shape_x.place(x=235, y=65, width=90, height=20)
+        self.sh_text_shape_x = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_shape_x.place(x=310, y=65, width=80, height=20)
-        self.fh_text_shape_x.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_shape_x.place(x=310, y=65, width=80, height=20)
+        self.sh_text_shape_x.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Shape Y
-        self.fh_label_shape_y = tk.Label(self.file_header_labelframe, text="Shape Y:", anchor="w")
-        self.fh_label_shape_y.place(x=235, y=95, width=90, height=20)
-        self.fh_text_shape_y = tk.Text(
+        self.sh_label_shape_y = tk.Label(self.file_header_labelframe, text="Shape Y:", anchor="w")
+        self.sh_label_shape_y.place(x=235, y=95, width=90, height=20)
+        self.sh_text_shape_y = tk.Text(
             self.file_header_labelframe,
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.fh_text_shape_y.place(x=310, y=95, width=80, height=20)
-        self.fh_text_shape_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+        self.sh_text_shape_y.place(x=310, y=95, width=80, height=20)
+        self.sh_text_shape_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
