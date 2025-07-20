@@ -11,28 +11,28 @@ from typing import Optional
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
 
-from src.EA_Image.attachments.comment_entry import CommentEntry
-from src.EA_Image.attachments.hot_spot_entry import HotSpotEntry
-from src.EA_Image.attachments.img_name_entry import ImgNameEntry
-from src.EA_Image.attachments.metal_bin_entry import MetalBinEntry
-from src.EA_Image.attachments.palette_entry import PaletteEntry
-from src.EA_Image.attachments.unknown_entry import UnknownEntry
-from src.EA_Image.common_ea_dir import (
+from src.EA_Font.attachments.comment_entry import CommentEntry
+from src.EA_Font.attachments.hot_spot_entry import HotSpotEntry
+from src.EA_Font.attachments.img_name_entry import ImgNameEntry
+from src.EA_Font.attachments.metal_bin_entry import MetalBinEntry
+from src.EA_Font.attachments.palette_entry import PaletteEntry
+from src.EA_Font.attachments.unknown_entry import UnknownEntry
+from src.EA_Font.common_ea_dir import (
     get_palette_info_dto_from_dir_entry,
     handle_image_swizzle_logic,
     is_image_compressed,
     is_image_swizzled,
 )
-from src.EA_Image.constants import (
+from src.EA_Font.constants import (
     CONVERT_IMAGES_SUPPORTED_TYPES,
     NEW_SHAPE_ALLOWED_SIGNATURES,
     OLD_SHAPE_ALLOWED_SIGNATURES,
     PALETTE_TYPES,
 )
-from src.EA_Image.data_read import get_null_terminated_string, get_string
-from src.EA_Image.dir_entry import DirEntry
-from src.EA_Image.dto import PaletteInfoDTO
-from src.EA_Image.ea_image_decoder import decode_image_data_by_entry_type
+from src.EA_Font.data_read import get_null_terminated_string, get_string
+from src.EA_Font.dir_entry import DirEntry
+from src.EA_Font.dto import PaletteInfoDTO
+from src.EA_Font.ea_image_decoder import decode_image_data_by_entry_type
 
 logger = get_logger(__name__)
 
@@ -70,42 +70,11 @@ class EAImage:
                 error_msg = "File is empty. No data to read!"
                 logger.info(error_msg)
                 return "FILE_IS_EMPTY", error_msg
-            if sign not in OLD_SHAPE_ALLOWED_SIGNATURES and sign not in NEW_SHAPE_ALLOWED_SIGNATURES:
+            if sign not in OLD_SHAPE_ALLOWED_SIGNATURES:
                 error_msg = f'File signature "{sign}" is not supported'
                 logger.info(error_msg)
                 return "SIGN_NOT_SUPPORTED", error_msg
 
-            # checking file size
-            back_offset = in_file.tell()
-            in_file.seek(0, os.SEEK_END)
-            real_file_size = in_file.tell()
-            in_file.seek(4)
-            file_size_le = struct.unpack("<L", in_file.read(4))[0]
-            in_file.seek(4)
-            file_size_be = struct.unpack(">L", in_file.read(4))[0]
-            in_file.seek(back_offset)
-            # fmt: off
-            if (file_size_le != real_file_size) and (file_size_be != real_file_size):
-
-                # fix for "CRCF" tail in some EA files
-                sign = b''
-                try:
-                    in_file.seek(real_file_size - 12)
-                    sign = in_file.read(4)
-                    in_file.seek(back_offset)
-                except Exception as error:
-                    logger.error(f"Can't check for CRCF signature! Error: {error}")
-
-                if sign != b'CRCF':
-                    error_msg = (
-                        "Real file size doesn't match file total file size from header:\n"
-                        + "Real_file_size: " + str(real_file_size) + "\n"
-                        + "File_size_le: " + str(file_size_le) + "\n"
-                        + "File_size_be: " + str(file_size_be)
-                    )
-                    logger.info(error_msg)
-                    return "WRONG_SIZE_ERROR", error_msg
-            # fmt: on
             return "OK", ""
 
         except Exception as error:

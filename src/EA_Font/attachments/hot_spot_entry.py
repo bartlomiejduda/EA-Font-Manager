@@ -1,9 +1,9 @@
-from src.EA_Image.attachments.bin_attachment_entry import BinAttachmentEntry
-from src.EA_Image.constants import (
+from src.EA_Font.attachments.bin_attachment_entry import BinAttachmentEntry
+from src.EA_Font.constants import (
     NEW_SHAPE_ALLOWED_SIGNATURES,
     OLD_SHAPE_ALLOWED_SIGNATURES,
 )
-from src.EA_Image.data_read import get_uint8, get_uint24, get_uint32
+from src.EA_Font.data_read import get_uint8, get_uint24, get_uint32
 
 
 class HotSpotEntry(BinAttachmentEntry):

@@ -12,24 +12,24 @@ from reversebox.image.image_encoder import ImageEncoder
 from reversebox.image.image_formats import ImageFormats
 from reversebox.image.swizzling.swizzle_ps2 import swizzle_ps2_palette
 
-from src.EA_Image.common import (
+from src.EA_Font.common import (
     get_bpp_for_image_type,
     get_indexed_image_format,
     get_indexed_palette_format,
 )
-from src.EA_Image.common_ea_dir import (
+from src.EA_Font.common_ea_dir import (
     get_palette_info_dto_from_dir_entry,
     handle_image_swizzle_logic,
     is_image_compressed,
     is_image_swizzled,
 )
-from src.EA_Image.constants import (
+from src.EA_Font.constants import (
     IMPORT_IMAGES_SUPPORTED_TYPES,
     mipmaps_resampling_mapping,
 )
-from src.EA_Image.dir_entry import DirEntry
-from src.EA_Image.dto import EncodeInfoDTO, PaletteInfoDTO, PartialEncodeInfoDTO
-from src.EA_Image.ea_image_main import EAImage
+from src.EA_Font.dir_entry import DirEntry
+from src.EA_Font.dto import EncodeInfoDTO, PaletteInfoDTO, PartialEncodeInfoDTO
+from src.EA_Font.ea_image_main import EAImage
 
 logger = get_logger(__name__)
 

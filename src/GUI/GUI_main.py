@@ -19,18 +19,18 @@ from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
 from reversebox.image.pillow_wrapper import PillowWrapper
 
-from src.EA_Image import ea_image_main
-from src.EA_Image.attachments.palette_entry import PaletteEntry
-from src.EA_Image.constants import (
+from src.EA_Font import ea_image_main
+from src.EA_Font.attachments.palette_entry import PaletteEntry
+from src.EA_Font.constants import (
     CONVERT_IMAGES_SUPPORTED_TYPES,
     IMPORT_IMAGES_SUPPORTED_TYPES,
     NEW_SHAPE_ALLOWED_SIGNATURES,
     OLD_SHAPE_ALLOWED_SIGNATURES,
     PALETTE_TYPES,
 )
-from src.EA_Image.dto import EncodeInfoDTO
-from src.EA_Image.ea_image_encoder import encode_ea_image
-from src.EA_Image.ea_image_main import EAImage
+from src.EA_Font.dto import EncodeInfoDTO
+from src.EA_Font.ea_image_encoder import encode_ea_image
+from src.EA_Font.ea_image_main import EAImage
 from src.GUI.GUI_tab_controller import GuiTabController
 from src.GUI.about_window import AboutWindow
 from src.GUI.GUI_entry_preview import GuiEntryPreview

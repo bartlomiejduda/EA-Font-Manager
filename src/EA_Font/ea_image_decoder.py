@@ -9,14 +9,14 @@ from reversebox.common.logger import get_logger
 from reversebox.image.image_decoder import ImageDecoder
 from reversebox.image.image_formats import ImageFormats
 
-from src.EA_Image.common import (
+from src.EA_Font.common import (
     get_bpp_for_image_type,
     get_indexed_image_format,
     get_indexed_palette_format,
 )
-from src.EA_Image.common_ea_dir import is_image_swizzled
-from src.EA_Image.dir_entry import DirEntry
-from src.EA_Image.dto import PaletteInfoDTO
+from src.EA_Font.common_ea_dir import is_image_swizzled
+from src.EA_Font.dir_entry import DirEntry
+from src.EA_Font.dto import PaletteInfoDTO
 
 logger = get_logger(__name__)
 

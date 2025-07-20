@@ -19,11 +19,11 @@ from reversebox.image.swizzling.swizzle_ps2 import (
 )
 from reversebox.image.swizzling.swizzle_psp import swizzle_psp, unswizzle_psp
 
-from src.EA_Image.attachments.palette_entry import PaletteEntry
-from src.EA_Image.common import get_bpp_for_image_type
-from src.EA_Image.constants import PALETTE_TYPES
-from src.EA_Image.dir_entry import DirEntry
-from src.EA_Image.dto import PaletteInfoDTO
+from src.EA_Font.attachments.palette_entry import PaletteEntry
+from src.EA_Font.common import get_bpp_for_image_type
+from src.EA_Font.constants import PALETTE_TYPES
+from src.EA_Font.dir_entry import DirEntry
+from src.EA_Font.dto import PaletteInfoDTO
 
 logger = get_logger(__name__)
 

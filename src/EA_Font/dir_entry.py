@@ -7,12 +7,12 @@ from typing import Optional
 
 from reversebox.common.common import convert_int_to_hex_string
 
-from src.EA_Image.common import get_bpp_for_image_type
-from src.EA_Image.constants import (
+from src.EA_Font.common import get_bpp_for_image_type
+from src.EA_Font.constants import (
     NEW_SHAPE_ALLOWED_SIGNATURES,
     OLD_SHAPE_ALLOWED_SIGNATURES,
 )
-from src.EA_Image.data_read import (
+from src.EA_Font.data_read import (
     get_int16,
     get_new_shape_uint24_flags,
     get_uint8,

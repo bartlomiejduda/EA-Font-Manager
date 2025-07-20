@@ -3,7 +3,7 @@ Copyright © 2024-2025  Bartłomiej Duda
 License: GPL-3.0 License
 """
 
-from src.EA_Image.dir_entry import DirEntry
+from src.EA_Font.dir_entry import DirEntry
 
 
 class BinAttachmentEntry(DirEntry):
