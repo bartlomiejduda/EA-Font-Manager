@@ -23,6 +23,6 @@ class GuiTabController(tk.Frame):
 
         self.tab_controller_box.select(0)
 
-        self.file_header_info_box = GuiFileHeaderInfoBox(self.tab1_file_header, gui_main)
-        self.shape_header_info_box = GuiShapeHeaderInfoBox(self.tab2_shape_header, gui_main)
-        self.font_flags_info_box = GuiFontFlagsInfoBox(self.tab3_font_flags, gui_main)
+        self.file_header_info_box: GuiFileHeaderInfoBox = GuiFileHeaderInfoBox(self.tab1_file_header, gui_main)
+        self.shape_header_info_box: GuiShapeHeaderInfoBox = GuiShapeHeaderInfoBox(self.tab2_shape_header, gui_main)
+        self.font_flags_info_box: GuiFontFlagsInfoBox = GuiFontFlagsInfoBox(self.tab3_font_flags, gui_main)

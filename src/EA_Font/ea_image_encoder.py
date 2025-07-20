@@ -29,12 +29,12 @@ from src.EA_Font.constants import (
 )
 from src.EA_Font.dir_entry import DirEntry
 from src.EA_Font.dto import EncodeInfoDTO, PaletteInfoDTO, PartialEncodeInfoDTO
-from src.EA_Font.ea_image_main import EAImage
+from src.EA_Font.ea_font_file import EAFontFile
 
 logger = get_logger(__name__)
 
 
-def encode_ea_image(rgba8888_data: bytes, ea_dir: DirEntry, ea_img: EAImage, gui_main) -> EncodeInfoDTO:
+def encode_ea_image(rgba8888_data: bytes, ea_dir: DirEntry, ea_img: EAFontFile, gui_main) -> EncodeInfoDTO:
     logger.info("Initializing encode_ea_image")
     entry_type: int = ea_dir.h_record_id & 0x7F
     indexed_image_format: ImageFormats = get_indexed_image_format(get_bpp_for_image_type(entry_type))

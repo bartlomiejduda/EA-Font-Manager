@@ -5,32 +5,19 @@ License: GPL-3.0 License
 
 import io
 import os
-import subprocess
 import tkinter as tk
 import traceback
 from configparser import ConfigParser
-from pathlib import Path
 from tkinter import filedialog, messagebox
-from typing import Optional
 
-from PIL import Image, ImageTk
-from reversebox.common.common import get_file_extension, get_file_extension_uppercase
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
-from reversebox.image.pillow_wrapper import PillowWrapper
 
-from src.EA_Font import ea_image_main
-from src.EA_Font.attachments.palette_entry import PaletteEntry
 from src.EA_Font.constants import (
-    CONVERT_IMAGES_SUPPORTED_TYPES,
-    IMPORT_IMAGES_SUPPORTED_TYPES,
     NEW_SHAPE_ALLOWED_SIGNATURES,
     OLD_SHAPE_ALLOWED_SIGNATURES,
-    PALETTE_TYPES,
 )
-from src.EA_Font.dto import EncodeInfoDTO
-from src.EA_Font.ea_image_encoder import encode_ea_image
-from src.EA_Font.ea_image_main import EAImage
+from src.EA_Font.ea_font_file import EAFontFile
 from src.GUI.GUI_tab_controller import GuiTabController
 from src.GUI.about_window import AboutWindow
 from src.GUI.GUI_entry_preview import GuiEntryPreview
@@ -66,6 +53,7 @@ class EAManGui:
         self.checkmark_path = self.MAIN_DIRECTORY + "\\data\\img\\checkmark.png"
         self.checkmark_image = None
         self.current_mipmaps_resampling = tk.StringVar(value="nearest")
+        self.ea_font_file: EAFontFile = EAFontFile()
 
         try:
             self.master.iconbitmap(self.icon_path)
@@ -153,7 +141,9 @@ class EAManGui:
             messagebox.showwarning("Warning", "Failed to open file!")
             return
 
-        ea_img: EAImage = ea_image_main.EAImage()
+        self.ea_font_file: EAFontFile = EAFontFile()
+
+        # Refpack check
         sign: bytes = in_file.read(2)
         if sign == b"\x10\xFB":
             in_file.seek(0)
@@ -161,12 +151,12 @@ class EAManGui:
             in_file = io.BytesIO(
                 RefpackHandler().decompress_data(in_file_data)
             )  # convert on-disk file to memory file with decompressed data
-            ea_img.is_total_f_data_compressed = True
+            self.ea_font_file.is_total_f_data_compressed = True
         in_file.seek(0)
-        check_result = ea_img.check_file_signature_and_size(in_file)
+        check_result = self.ea_font_file.check_file_signature(in_file)
 
         # save data for later export
-        ea_img.total_f_data = in_file.read()
+        self.ea_font_file.total_f_data = in_file.read()
         in_file.seek(0)
 
         if check_result[0] != "OK":
@@ -176,90 +166,41 @@ class EAManGui:
 
         logger.info(f"Loading file {in_file_name}...")
 
-        self.ea_image_id += 1
-        self.opened_ea_images_count += 1
-        ea_img.set_ea_image_id(self.ea_image_id)
-        self.opened_ea_images.append(ea_img)
 
-        ea_img.parse_header(in_file, in_file_path, in_file_name)
-        ea_img.parse_directory(in_file)
+        # Parse EA Font File
+        self.ea_font_file.parse_header(in_file, in_file_path, in_file_name)
+        # self.ea_font_file.parse_directory(in_file)
 
         # check if there are any bin attachments
         # and add them to the list if found
-        ea_img.parse_bin_attachments(in_file)
+        # ea_img.parse_bin_attachments(in_file)
 
         # convert all supported images
         # in the ea_img file
-        try:
-            logger.info("Starting processing with convert_images function")
-            self.loading_label = tk.Label(self.main_frame, text="Loading... Please wait.", font=("Arial", 14))
-            if ea_img.total_f_size > 200000:
-                self.loading_label.place(x=0, y=0, relwidth=1, relheight=1)
-                self.loading_label.update()
-            ea_img.convert_images(self)
-            self.loading_label.destroy()
-        except Exception as error:
-            logger.error(f"Error while converting images! Error: {error}")
-            logger.error(traceback.format_exc())
+        # try:
+        #     logger.info("Starting processing with convert_images function")
+        #     self.loading_label = tk.Label(self.main_frame, text="Loading... Please wait.", font=("Arial", 14))
+        #     if ea_img.total_f_size > 200000:
+        #         self.loading_label.place(x=0, y=0, relwidth=1, relheight=1)
+        #         self.loading_label.update()
+        #     ea_img.convert_images(self)
+        #     self.loading_label.destroy()
+        # except Exception as error:
+        #     logger.error(f"Error while converting images! Error: {error}")
+        #     logger.error(traceback.format_exc())
 
-            # set text for header
-            if ea_img.sign in OLD_SHAPE_ALLOWED_SIGNATURES:
-                self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_sign, ea_img.sign)
-                self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_f_size, ea_img.total_f_size)
-                self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_obj_count, ea_img.num_of_entries)
-                self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_dir_id, ea_img.format_version)
-                self._execute_old_shape_tab_logic()
-            elif ea_img.sign in NEW_SHAPE_ALLOWED_SIGNATURES:
-                self.set_text_in_box(self.tab_controller.shape_header_info_box.fh_text_sign, ea_img.sign)
-                self.set_text_in_box(self.tab_controller.shape_header_info_box.fh_text_f_size, ea_img.total_f_size)
-                self.set_text_in_box(self.tab_controller.shape_header_info_box.fh_text_obj_count, ea_img.num_of_entries)
-                self.set_text_in_box(self.tab_controller.shape_header_info_box.fh_text_header_and_toc_size, ea_img.header_and_toc_size)
-                self._execute_new_shape_tab_logic()
+        # set text for header
+        if self.ea_font_file.sign in OLD_SHAPE_ALLOWED_SIGNATURES:
+            self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_sign, self.ea_font_file.sign)
+            self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_total_f_size, self.ea_font_file.total_f_size)
+            self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_version, self.ea_font_file.file_version)
+            self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_number_of_characters, self.ea_font_file.num_of_characters)
+        elif self.ea_font_file.sign in NEW_SHAPE_ALLOWED_SIGNATURES:
+            raise Exception("New shapes not supported yet!")
+        else:
+            raise Exception("Not supported signature!")
 
-            # set text for the first entry
-            if ea_img.sign in OLD_SHAPE_ALLOWED_SIGNATURES:
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_rec_type, ea_img.dir_entry_list[0].get_entry_type())
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_size_of_the_block, ea_img.dir_entry_list[0].h_size_of_the_block)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_mipmaps_count, ea_img.dir_entry_list[0].h_mipmaps_count)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_width, ea_img.dir_entry_list[0].h_width)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_height, ea_img.dir_entry_list[0].h_height)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_center_x, ea_img.dir_entry_list[0].h_center_x)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_center_y, ea_img.dir_entry_list[0].h_center_y)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_left_x, ea_img.dir_entry_list[0].h_default_x_position)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_top_y, ea_img.dir_entry_list[0].h_default_y_position)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_header_offset, ea_img.dir_entry_list[0].h_entry_header_offset)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_data_offset, ea_img.dir_entry_list[0].raw_data_offset)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_data_size, ea_img.dir_entry_list[0].raw_data_size)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_end_offset, ea_img.dir_entry_list[0].h_entry_end_offset)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_record_id_masked, ea_img.dir_entry_list[0].h_record_id_masked)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_img_compression_masked, ea_img.dir_entry_list[0].h_is_image_compressed_masked)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_flag1_referenced, ea_img.dir_entry_list[0].h_flag1_referenced)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_flag2_swizzled, ea_img.dir_entry_list[0].h_flag2_swizzled)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_flag3_transposed, ea_img.dir_entry_list[0].h_flag3_transposed)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_flag4_reserved, ea_img.dir_entry_list[0].h_flag4_reserved)
-                self.set_text_in_box(self.tab_controller.entry_header_info_box.eh_text_entry_image_bpp, ea_img.dir_entry_list[0].h_image_bpp)
-                self._execute_old_shape_tab_logic()
-            elif ea_img.sign in NEW_SHAPE_ALLOWED_SIGNATURES:
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_rec_type, ea_img.dir_entry_list[0].get_entry_type())
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_size_of_the_block, ea_img.dir_entry_list[0].h_size_of_the_block)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_width, ea_img.dir_entry_list[0].h_width)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_height, ea_img.dir_entry_list[0].h_height)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_left_x, ea_img.dir_entry_list[0].h_default_x_position)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_top_y, ea_img.dir_entry_list[0].h_default_y_position)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_entry_image_bpp, ea_img.dir_entry_list[0].h_image_bpp)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_mipmaps_count, ea_img.dir_entry_list[0].new_shape_number_of_mipmaps)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_flags_int, ea_img.dir_entry_list[0].new_shape_flags)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_flags_hex_str, ea_img.dir_entry_list[0].new_shape_flags_hex_str)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_entry_header_offset, ea_img.dir_entry_list[0].h_entry_header_offset)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_data_offset, ea_img.dir_entry_list[0].raw_data_offset)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_entry_end_offset, ea_img.dir_entry_list[0].h_entry_end_offset)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_data_size, ea_img.dir_entry_list[0].raw_data_size)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_entry_flag_new_format, ea_img.dir_entry_list[0].new_shape_flag_new_format)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_entry_flag_compressed, ea_img.dir_entry_list[0].new_shape_flag_compressed)
-                self.set_text_in_box(self.tab_controller.new_shape_entry_header_info_box.eh_text_entry_flag_swizzled, ea_img.dir_entry_list[0].new_shape_flag_swizzled)
-                self._execute_new_shape_tab_logic()
 
-        self.tree_view.tree_man.add_object(ea_img)
         in_file.close()
 
     def show_about_window(self):
@@ -276,5 +217,3 @@ class EAManGui:
     @staticmethod
     def close_toplevel_window(wind):
         wind.destroy()
-
-# fmt: on

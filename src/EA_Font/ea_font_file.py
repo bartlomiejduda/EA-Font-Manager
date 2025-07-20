@@ -1,5 +1,5 @@
 """
-Copyright © 2023-2025  Bartłomiej Duda
+Copyright © 2025  Bartłomiej Duda
 License: GPL-3.0 License
 """
 
@@ -29,7 +29,7 @@ from src.EA_Font.constants import (
     OLD_SHAPE_ALLOWED_SIGNATURES,
     PALETTE_TYPES,
 )
-from src.EA_Font.data_read import get_null_terminated_string, get_string
+from src.EA_Font.data_read import get_null_terminated_string, get_string, get_uint32, get_uint16, get_uint8
 from src.EA_Font.dir_entry import DirEntry
 from src.EA_Font.dto import PaletteInfoDTO
 from src.EA_Font.ea_image_decoder import decode_image_data_by_entry_type
@@ -37,30 +37,34 @@ from src.EA_Font.ea_image_decoder import decode_image_data_by_entry_type
 logger = get_logger(__name__)
 
 
-class EAImage:
+class EAFontFile:
     def __init__(self):
-        self.sign = None
-        self.total_f_size = -1
+
+        # file header fields
+        self.sign: Optional[str] = None
+        self.total_f_size: Optional[int] = None
+        self.file_version: Optional[str] = None
+        self.num_of_characters: Optional[int] = None
+        self.font_flags: Optional[int] = None
+        self.center_x: Optional[int] = None
+        self.center_y: Optional[int] = None
+        self.ascent: Optional[int] = None
+        self.descent: Optional[int] = None
+        self.char_info_offset: Optional[int] = None
+        self.kerning_table_offset: Optional[int] = None
+        self.shape_header_offset: Optional[int] = None
+
+        # local fields
         self.total_f_data: Optional[bytes] = None
         self.is_total_f_data_compressed: bool = False
-        self.num_of_entries = -1
-        self.format_version = None
-        self.header_and_toc_size = None  # new shape only
-
         self.f_name = None
         self.f_path = None
         self.f_endianess = None
         self.f_dir_endianess = None
         self.f_endianess_desc = None
         self.f_size = None
-        self.dir_entry_list = []
-        self.ea_image_id = -1
-        self.dir_entry_id = 0
 
-    def set_ea_image_id(self, in_ea_image_id):
-        self.ea_image_id = in_ea_image_id
-
-    def check_file_signature_and_size(self, in_file) -> tuple:
+    def check_file_signature(self, in_file) -> tuple:
         try:
             # checking signature
             back_offset = in_file.tell()
@@ -82,45 +86,33 @@ class EAImage:
             logger.error(error_msg)
             return "CANT_READ_ERROR", error_msg
 
-    def parse_header(self, in_file, in_file_path, in_file_name) -> bool:
-        def _set_big_endianess():
-            self.f_endianess = ">"
-            self.f_endianess_desc = "big"
+    def _set_big_endianess(self):
+        self.f_endianess = ">"
+        self.f_endianess_desc = "big"
 
-        def _set_little_endianess():
-            self.f_endianess = "<"
-            self.f_endianess_desc = "little"
+    def _set_little_endianess(self):
+        self.f_endianess = "<"
+        self.f_endianess_desc = "little"
 
-        self.sign = get_string(in_file, 4)
+    def parse_header(self, in_file, in_file_path, in_file_name) -> None:
         self.f_path = in_file_path
         self.f_name = in_file_name
         self.f_size = os.path.getsize(self.f_path)
-        _set_little_endianess()
-        self.total_f_size = struct.unpack(self.f_endianess + "L", in_file.read(4))[0]
+        self._set_little_endianess()
 
-        if self.sign == "SHPG" or self.sign in NEW_SHAPE_ALLOWED_SIGNATURES:
-            _set_big_endianess()
-        else:
-            _set_little_endianess()
-        self.num_of_entries = struct.unpack(self.f_endianess + "L", in_file.read(4))[0]
-        if self.sign in OLD_SHAPE_ALLOWED_SIGNATURES:
-            self.format_version = in_file.read(4).decode("utf8")  # e.g. "G354"
-        elif self.sign in NEW_SHAPE_ALLOWED_SIGNATURES:
-            self.header_and_toc_size = struct.unpack(self.f_endianess + "L", in_file.read(4))[0]
-
-        # set endianess for directory
-        if self.sign in ("SHPG", "ShpF", "ShpS", "ShpX"):
-            self.f_dir_endianess = ">"  # big
-        else:
-            self.f_dir_endianess = "<"  # little
-
-        # set endianess for the rest of the file
-        if self.sign in ("SHPG", "ShpG", "ShpM"):
-            _set_big_endianess()
-        else:
-            _set_little_endianess()
-
-        return True  # header has been parsed
+        self.sign = get_string(in_file, 4)
+        self.total_f_size = get_uint32(in_file, self.f_endianess)
+        self.file_version = get_uint16(in_file, self.f_endianess)
+        self.num_of_characters = get_uint16(in_file, self.f_endianess)
+        self.font_flags = get_uint32(in_file, self.f_endianess)
+        self.center_x = get_uint8(in_file, self.f_endianess)
+        self.center_y = get_uint8(in_file, self.f_endianess)
+        self.ascent = get_uint8(in_file, self.f_endianess)
+        self.descent = get_uint8(in_file, self.f_endianess)
+        self.char_info_offset = get_uint32(in_file, self.f_endianess)
+        self.kerning_table_offset = get_uint32(in_file, self.f_endianess)
+        self.shape_header_offset = get_uint32(in_file, self.f_endianess)
+        return  # header has been parsed
 
     def parse_directory(self, in_file) -> bool:
         # creating directory entries

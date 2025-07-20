@@ -1,5 +1,5 @@
 """
-Copyright © 2024-2025  Bartłomiej Duda
+Copyright © 2025  Bartłomiej Duda
 License: GPL-3.0 License
 """
 
@@ -15,23 +15,16 @@ IMPORT_IMAGES_SUPPORTED_TYPES = [1, 2, 3, 4, 5, 22, 64, 65, 66, 88, 89, 90, 91, 
                                  109, 120, 121, 123, 125, 126, 127, 130, 131, 192, 193, 194, 237, 248, 251, 255]
 
 OLD_SHAPE_ALLOWED_SIGNATURES = (
-    "SHPI",  # PC games
-    "SHPP",  # PS1 games
-    "SHPS",  # PS2 games
-    "SHPX",  # XBOX games
-    "SHPM",  # PSP games
-    "SHPG",  # WII/Gamecube games
-    "SHPA",  # Game Boy Advance games
+    "FNTF",  # PC games
+    "FNTP",  # PS1 games
+    "FNTS",  # PS2 games
+    "FNTX",  # XBOX games
+    "FNTM",  # PSP games
+    "FNTG",  # WII/Gamecube games
+    "FNTA",  # Game Boy Advance games
 )
 
-NEW_SHAPE_ALLOWED_SIGNATURES = (
-    "ShpF",  # PC games
-    "ShpS",  # PS2 games
-    "ShpX",  # XBOX games
-    "ShpM",  # PSP games
-    "ShpG",  # WII/Gamecube games
-    "ShpA",  # Game Boy Advance games
-)
+NEW_SHAPE_ALLOWED_SIGNATURES = ()  # TODO
 
 mipmaps_resampling_mapping: dict = {
     "nearest": PIL.Image.Resampling.NEAREST,
