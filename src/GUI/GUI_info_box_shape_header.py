@@ -23,7 +23,9 @@ class GuiShapeHeaderInfoBox(tk.Frame):
         self.sh_text_record_id.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Next Binary Attachment Offset
-        self.sh_label_next_binary_attachment_offset = tk.Label(self.file_header_labelframe, text="Next Bin. Offset:", anchor="w")
+        self.sh_label_next_binary_attachment_offset = tk.Label(
+            self.file_header_labelframe, text="Next Bin. Offset:", anchor="w"
+        )
         self.sh_label_next_binary_attachment_offset.place(x=5, y=35, width=90, height=20)
         self.sh_text_next_binary_attachment_offset = tk.Text(
             self.file_header_labelframe,

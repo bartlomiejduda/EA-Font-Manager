@@ -68,7 +68,7 @@ def encode_ea_image(rgba8888_data: bytes, ea_dir: DirEntry, ea_img: EAFontFile, 
             entry_type,
             ea_dir.h_width,
             ea_dir.h_height,
-            ea_img.sign,
+            ea_img.fh_sign,
             True,
         )
 
@@ -88,7 +88,7 @@ def encode_ea_image(rgba8888_data: bytes, ea_dir: DirEntry, ea_img: EAFontFile, 
                     entry_type,
                     mip_width,
                     mip_height,
-                    ea_img.sign,
+                    ea_img.fh_sign,
                     True,
                 )
                 swizzled_image_data += mip_swizzled_data

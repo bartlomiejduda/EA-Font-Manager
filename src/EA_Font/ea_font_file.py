@@ -10,6 +10,7 @@ from typing import Optional
 
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
+from reversebox.io_files.bytes_helper_functions import get_bits
 
 from src.EA_Font.attachments.comment_entry import CommentEntry
 from src.EA_Font.attachments.hot_spot_entry import HotSpotEntry
@@ -29,7 +30,15 @@ from src.EA_Font.constants import (
     OLD_SHAPE_ALLOWED_SIGNATURES,
     PALETTE_TYPES,
 )
-from src.EA_Font.data_read import get_null_terminated_string, get_string, get_uint32, get_uint16, get_uint8
+from src.EA_Font.data_read import (
+    get_int16,
+    get_null_terminated_string,
+    get_string,
+    get_uint8,
+    get_uint16,
+    get_uint24,
+    get_uint32,
+)
 from src.EA_Font.dir_entry import DirEntry
 from src.EA_Font.dto import PaletteInfoDTO
 from src.EA_Font.ea_image_decoder import decode_image_data_by_entry_type
@@ -41,18 +50,39 @@ class EAFontFile:
     def __init__(self):
 
         # file header fields
-        self.sign: Optional[str] = None
-        self.total_f_size: Optional[int] = None
-        self.file_version: Optional[str] = None
-        self.num_of_characters: Optional[int] = None
-        self.font_flags: Optional[int] = None
-        self.center_x: Optional[int] = None
-        self.center_y: Optional[int] = None
-        self.ascent: Optional[int] = None
-        self.descent: Optional[int] = None
-        self.char_info_offset: Optional[int] = None
-        self.kerning_table_offset: Optional[int] = None
-        self.shape_header_offset: Optional[int] = None
+        self.fh_sign: Optional[str] = None
+        self.fh_total_f_size: Optional[int] = None
+        self.fh_file_version: Optional[str] = None
+        self.fh_num_of_characters: Optional[int] = None
+        self.fh_font_flags: Optional[int] = None
+        self.fh_center_x: Optional[int] = None
+        self.fh_center_y: Optional[int] = None
+        self.fh_ascent: Optional[int] = None
+        self.fh_descent: Optional[int] = None
+        self.fh_char_info_offset: Optional[int] = None
+        self.fh_kerning_table_offset: Optional[int] = None
+        self.fh_shape_header_offset: Optional[int] = None
+
+        # shape header fields
+        self.sh_record_id: Optional[int] = None
+        self.sh_next_bin_attachment_offset: Optional[int] = None
+        self.sh_image_width: Optional[int] = None
+        self.sh_image_height: Optional[int] = None
+        self.sh_center_x: Optional[int] = None
+        self.sh_center_y: Optional[int] = None
+        self.sh_shape_x: Optional[int] = None
+        self.sh_shape_y: Optional[int] = None
+
+        # font flags fields
+        self.ff_antialiased: Optional[int] = None
+        self.ff_dropshadow: Optional[int] = None
+        self.ff_outline: Optional[int] = None
+        self.ff_vram: Optional[int] = None
+        self.ff_baseline: Optional[int] = None
+        self.ff_orientation: Optional[int] = None
+        self.ff_direction: Optional[int] = None
+        self.ff_encoding: Optional[int] = None
+        self.ff_format: Optional[int] = None
 
         # local fields
         self.total_f_data: Optional[bytes] = None
@@ -94,25 +124,47 @@ class EAFontFile:
         self.f_endianess = "<"
         self.f_endianess_desc = "little"
 
-    def parse_header(self, in_file, in_file_path, in_file_name) -> None:
+    def parse_file_header(self, in_file, in_file_path, in_file_name) -> None:
         self.f_path = in_file_path
         self.f_name = in_file_name
         self.f_size = os.path.getsize(self.f_path)
         self._set_little_endianess()
 
-        self.sign = get_string(in_file, 4)
-        self.total_f_size = get_uint32(in_file, self.f_endianess)
-        self.file_version = get_uint16(in_file, self.f_endianess)
-        self.num_of_characters = get_uint16(in_file, self.f_endianess)
-        self.font_flags = get_uint32(in_file, self.f_endianess)
-        self.center_x = get_uint8(in_file, self.f_endianess)
-        self.center_y = get_uint8(in_file, self.f_endianess)
-        self.ascent = get_uint8(in_file, self.f_endianess)
-        self.descent = get_uint8(in_file, self.f_endianess)
-        self.char_info_offset = get_uint32(in_file, self.f_endianess)
-        self.kerning_table_offset = get_uint32(in_file, self.f_endianess)
-        self.shape_header_offset = get_uint32(in_file, self.f_endianess)
+        self.fh_sign = get_string(in_file, 4)
+        self.fh_total_f_size = get_uint32(in_file, self.f_endianess)
+        self.fh_file_version = get_uint16(in_file, self.f_endianess)
+        self.fh_num_of_characters = get_uint16(in_file, self.f_endianess)
+        self.fh_font_flags = get_uint32(in_file, self.f_endianess)
+        self.fh_center_x = get_uint8(in_file, self.f_endianess)
+        self.fh_center_y = get_uint8(in_file, self.f_endianess)
+        self.fh_ascent = get_uint8(in_file, self.f_endianess)
+        self.fh_descent = get_uint8(in_file, self.f_endianess)
+        self.fh_char_info_offset = get_uint32(in_file, self.f_endianess)
+        self.fh_kerning_table_offset = get_uint32(in_file, self.f_endianess)
+        self.fh_shape_header_offset = get_uint32(in_file, self.f_endianess)
         return  # header has been parsed
+
+    def parse_shape_header(self, in_file) -> None:
+        in_file.seek(self.fh_shape_header_offset)
+        self.sh_record_id = get_uint8(in_file, self.f_endianess)
+        self.sh_next_bin_attachment_offset = get_uint24(in_file, self.f_endianess)
+        self.sh_image_width = get_uint16(in_file, self.f_endianess)
+        self.sh_image_height = get_uint16(in_file, self.f_endianess)
+        self.sh_center_x = get_int16(in_file, self.f_endianess)
+        self.sh_center_y = get_int16(in_file, self.f_endianess)
+        self.sh_shape_x = get_uint16(in_file, self.f_endianess)
+        self.sh_shape_y = get_uint16(in_file, self.f_endianess)
+
+    def parse_font_flags(self) -> None:
+        self.ff_antialiased = get_bits(self.fh_font_flags, 1, 0)
+        self.ff_dropshadow = get_bits(self.fh_font_flags, 1, 1)
+        self.ff_outline = get_bits(self.fh_font_flags, 1, 2)
+        self.ff_vram = get_bits(self.fh_font_flags, 1, 3)
+        self.ff_baseline = get_bits(self.fh_font_flags, 2, 8)
+        self.ff_orientation = get_bits(self.fh_font_flags, 1, 10)
+        self.ff_direction = get_bits(self.fh_font_flags, 1, 11)
+        self.ff_encoding = get_bits(self.fh_font_flags, 2, 16)
+        self.ff_format = get_bits(self.fh_font_flags, 1, 18)
 
     def parse_directory(self, in_file) -> bool:
         # creating directory entries
@@ -121,12 +173,12 @@ class EAFontFile:
             entry_id = str(self.ea_image_id) + "_direntry_" + str(self.dir_entry_id)
             ea_dir_entry = None
 
-            if self.sign in OLD_SHAPE_ALLOWED_SIGNATURES:
+            if self.fh_sign in OLD_SHAPE_ALLOWED_SIGNATURES:
                 entry_tag_bytes = in_file.read(4)
                 entry_tag = entry_tag_bytes.decode("utf8")
                 entry_offset = struct.unpack(self.f_dir_endianess + "L", in_file.read(4))[0]
                 ea_dir_entry = DirEntry(entry_id, entry_tag, entry_offset)
-            elif self.sign in NEW_SHAPE_ALLOWED_SIGNATURES:
+            elif self.fh_sign in NEW_SHAPE_ALLOWED_SIGNATURES:
                 entry_offset = struct.unpack(self.f_dir_endianess + "L", in_file.read(4))[0]
                 entry_size = struct.unpack(self.f_dir_endianess + "L", in_file.read(4))[0]  # noqa: F841
                 entry_tag = get_null_terminated_string(in_file)
@@ -148,7 +200,7 @@ class EAFontFile:
 
             # set end offset for DIR entry
             if entry_num == self.num_of_entries:
-                ea_dir_entry.end_offset = self.total_f_size
+                ea_dir_entry.end_offset = self.fh_total_f_size
             else:
                 ea_dir_entry.end_offset = self.dir_entry_list[i + 1].start_offset
 
@@ -158,7 +210,7 @@ class EAFontFile:
         return True  # directory has been parsed
 
     def parse_dir_entry_header_and_data(self, in_file, ea_dir_entry) -> bool:
-        ea_dir_entry.set_entry_header(in_file, self.f_endianess, self.sign)  # read entry header and set all values
+        ea_dir_entry.set_entry_header(in_file, self.f_endianess, self.fh_sign)  # read entry header and set all values
 
         ea_dir_entry.set_raw_data(
             in_file,
@@ -166,7 +218,7 @@ class EAFontFile:
             ea_dir_entry.end_offset,
         )  # read raw entry data and set values
 
-        if self.sign in OLD_SHAPE_ALLOWED_SIGNATURES:
+        if self.fh_sign in OLD_SHAPE_ALLOWED_SIGNATURES:
             ea_dir_entry.set_is_image_compressed_masked(in_file)
         ea_dir_entry.set_img_end_offset()  # this value is known only after reading data
 
@@ -215,7 +267,7 @@ class EAFontFile:
                         logger.warning(f"Unknown bin attachment entry ({str(hex(bin_att_rec_id))})!")
 
                     bin_att_entry.set_tag(bin_att_rec_id)
-                    bin_att_entry.set_entry_header(in_file, self.f_endianess, self.sign)
+                    bin_att_entry.set_entry_header(in_file, self.f_endianess, self.fh_sign)
                     bin_att_start_offset = in_file.tell()
                     bin_att_entry.set_raw_data(in_file, bin_att_start_offset, ea_dir_entry.end_offset)
 
@@ -263,7 +315,7 @@ class EAFontFile:
         # unswizzling logic
         if is_image_swizzled(ea_dir_entry):
             image_data = handle_image_swizzle_logic(
-                image_data, entry_type, ea_dir_entry.h_width, ea_dir_entry.h_height, self.sign, False
+                image_data, entry_type, ea_dir_entry.h_width, ea_dir_entry.h_height, self.fh_sign, False
             )
 
         # palette info logic
