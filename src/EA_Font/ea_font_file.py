@@ -10,14 +10,17 @@ from typing import Optional
 
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
+from reversebox.image.common import convert_bpp_to_bytes_per_pixel
 from reversebox.io_files.bytes_helper_functions import get_bits
 
+from src.EA_Font.attachments.bin_attachment_entry import BinAttachmentEntry
 from src.EA_Font.attachments.comment_entry import CommentEntry
 from src.EA_Font.attachments.hot_spot_entry import HotSpotEntry
 from src.EA_Font.attachments.img_name_entry import ImgNameEntry
 from src.EA_Font.attachments.metal_bin_entry import MetalBinEntry
 from src.EA_Font.attachments.palette_entry import PaletteEntry
 from src.EA_Font.attachments.unknown_entry import UnknownEntry
+from src.EA_Font.common import get_bpp_for_image_type
 from src.EA_Font.common_ea_dir import (
     get_palette_info_dto_from_dir_entry,
     handle_image_swizzle_logic,
@@ -84,6 +87,13 @@ class EAFontFile:
         self.ff_encoding: Optional[int] = None
         self.ff_format: Optional[int] = None
 
+        # data fields
+        # self.raw_image_data: Optional[bytes] = None
+        # self.binary_attachments_list: list[BinAttachmentEntry] = []
+        self.num_of_entries = 1
+        self.dir_entry_id = 0
+        self.dir_entry_list: list[DirEntry] = []
+
         # local fields
         self.total_f_data: Optional[bytes] = None
         self.is_total_f_data_compressed: bool = False
@@ -144,16 +154,16 @@ class EAFontFile:
         self.fh_shape_header_offset = get_uint32(in_file, self.f_endianess)
         return  # header has been parsed
 
-    def parse_shape_header(self, in_file) -> None:
-        in_file.seek(self.fh_shape_header_offset)
-        self.sh_record_id = get_uint8(in_file, self.f_endianess)
-        self.sh_next_bin_attachment_offset = get_uint24(in_file, self.f_endianess)
-        self.sh_image_width = get_uint16(in_file, self.f_endianess)
-        self.sh_image_height = get_uint16(in_file, self.f_endianess)
-        self.sh_center_x = get_int16(in_file, self.f_endianess)
-        self.sh_center_y = get_int16(in_file, self.f_endianess)
-        self.sh_shape_x = get_uint16(in_file, self.f_endianess)
-        self.sh_shape_y = get_uint16(in_file, self.f_endianess)
+    # def parse_shape_header(self, in_file) -> None:
+    #     in_file.seek(self.fh_shape_header_offset)
+    #     self.sh_record_id = get_uint8(in_file, self.f_endianess)
+    #     self.sh_next_bin_attachment_offset = get_uint24(in_file, self.f_endianess)
+    #     self.sh_image_width = get_uint16(in_file, self.f_endianess)
+    #     self.sh_image_height = get_uint16(in_file, self.f_endianess)
+    #     self.sh_center_x = get_int16(in_file, self.f_endianess)
+    #     self.sh_center_y = get_int16(in_file, self.f_endianess)
+    #     self.sh_shape_x = get_uint16(in_file, self.f_endianess)
+    #     self.sh_shape_y = get_uint16(in_file, self.f_endianess)
 
     def parse_font_flags(self) -> None:
         self.ff_antialiased = get_bits(self.fh_font_flags, 1, 0)
@@ -166,29 +176,44 @@ class EAFontFile:
         self.ff_encoding = get_bits(self.fh_font_flags, 2, 16)
         self.ff_format = get_bits(self.fh_font_flags, 1, 18)
 
+    # def parse_shape_entry(self, in_file) -> None:
+    #     # parse header
+    #     self.parse_shape_header(in_file)
+    #
+    #     # parse image data
+    #     image_bpp: int = get_bpp_for_image_type(self.sh_record_id)
+    #     if image_bpp == 4:
+    #         image_data_size = self.sh_image_width * self.sh_image_height // 2
+    #     elif image_bpp >= 8:
+    #         image_data_size = self.sh_image_width * self.sh_image_height * convert_bpp_to_bytes_per_pixel(image_bpp)
+    #     else:
+    #         raise Exception("Image bpp not supported!")
+    #
+    #     self.raw_image_data = in_file.read(image_data_size)
+    #
+    #     # parse binary attachments
+    #     if self.sh_next_bin_attachment_offset != 0:
+    #         while 1:
+    #             record_id =
+    #             binary_attachment_entry: BinAttachmentEntry = BinAttachmentEntry(
+    #                 record_id = get_uint8(in_file, self.f_endianess),
+    #                 next_bin_attachment_offset = get_uint24(in_file, self.f_endianess),
+    #             )
+
+
+    # ATTENTION! For font files there should be only one dir entry per file
     def parse_directory(self, in_file) -> bool:
         # creating directory entries
+
+        in_file.seek(self.fh_shape_header_offset)
         for i in range(self.num_of_entries):
             self.dir_entry_id += 1
-            entry_id = str(self.ea_image_id) + "_direntry_" + str(self.dir_entry_id)
-            ea_dir_entry = None
-
-            if self.fh_sign in OLD_SHAPE_ALLOWED_SIGNATURES:
-                entry_tag_bytes = in_file.read(4)
-                entry_tag = entry_tag_bytes.decode("utf8")
-                entry_offset = struct.unpack(self.f_dir_endianess + "L", in_file.read(4))[0]
-                ea_dir_entry = DirEntry(entry_id, entry_tag, entry_offset)
-            elif self.fh_sign in NEW_SHAPE_ALLOWED_SIGNATURES:
-                entry_offset = struct.unpack(self.f_dir_endianess + "L", in_file.read(4))[0]
-                entry_size = struct.unpack(self.f_dir_endianess + "L", in_file.read(4))[0]  # noqa: F841
-                entry_tag = get_null_terminated_string(in_file)
-                ea_dir_entry = DirEntry(entry_id, entry_tag, entry_offset)
-
+            entry_id ="img_id" + "_direntry_" + str(self.dir_entry_id)
+            entry_start_offset = in_file.tell()
+            entry_tag = "entry_tag_" + str(self.dir_entry_id)
+            ea_dir_entry = DirEntry(entry_id, entry_tag, entry_start_offset)
             self.dir_entry_list.append(ea_dir_entry)  # dir entry is now initialized and can be added to the list
 
-        # sort dir entries by entry start offset
-        # it can solve issues when dir entries are listed in random order in archive TOC
-        # (e.g. The Need for Speed: Special Edition .FSH files)
         self.dir_entry_list.sort(key=lambda d_entry: d_entry.start_offset)
 
         # updating end offset for each entry

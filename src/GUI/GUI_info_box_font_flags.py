@@ -85,7 +85,7 @@ class GuiFontFlagsInfoBox(tk.Frame):
             bg=self.file_header_labelframe["bg"],
             state="disabled",
         )
-        self.ff_text_baseline_flag.place(x=105, y=155, width=120, height=20)
+        self.ff_text_baseline_flag.place(x=105, y=155, width=180, height=20)
         self.ff_text_baseline_flag.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
         # Orientation Flag

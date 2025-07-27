@@ -15,7 +15,8 @@ from reversebox.compression.compression_refpack import RefpackHandler
 
 from src.EA_Font.constants import (
     NEW_SHAPE_ALLOWED_SIGNATURES,
-    OLD_SHAPE_ALLOWED_SIGNATURES,
+    OLD_SHAPE_ALLOWED_SIGNATURES, baseline_flags_mapping, orientation_flags_mapping, direction_flags_mapping,
+    encoding_flags_mapping, format_flags_mapping,
 )
 from src.EA_Font.ea_font_file import EAFontFile
 from src.GUI.about_window import AboutWindow
@@ -169,8 +170,24 @@ class EAManGui:
 
         # Parse EA Font File
         self.ea_font_file.parse_file_header(in_file, in_file_path, in_file_name)
-        self.ea_font_file.parse_shape_header(in_file)
         self.ea_font_file.parse_font_flags()
+        self.ea_font_file.parse_directory(in_file)
+        self.ea_font_file.parse_bin_attachments(in_file)
+        self.ea_font_file.convert_images(self)
+
+        # image preview logic START
+        try:
+            self.entry_preview.preview_instance.destroy()
+        except Exception:
+            pass
+
+        if self.ea_font_file.dir_entry_list[0].is_img_convert_supported:
+            self.entry_preview.init_image_preview_logic(self.ea_font_file.dir_entry_list[0], "aaaa")
+
+        else:
+            self.entry_preview.init_image_preview_not_supported_logic()
+        # image preview logic END
+
         # self.ea_font_file.parse_directory(in_file)
 
         # check if there are any bin attachments
@@ -208,27 +225,27 @@ class EAManGui:
             self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_shape_header_offset, self.ea_font_file.fh_shape_header_offset)
 
             # set shape header fields
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_record_id, self.ea_font_file.sh_record_id)
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_next_binary_attachment_offset, self.ea_font_file.sh_next_bin_attachment_offset)
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_width, self.ea_font_file.sh_image_width)
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_height, self.ea_font_file.sh_image_height)
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_x, self.ea_font_file.sh_center_x)
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_y, self.ea_font_file.sh_center_y)
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_x, self.ea_font_file.sh_shape_x)
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_y, self.ea_font_file.sh_shape_y)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_record_id, self.ea_font_file.sh_record_id)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_next_binary_attachment_offset, self.ea_font_file.sh_next_bin_attachment_offset)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_width, self.ea_font_file.sh_image_width)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_height, self.ea_font_file.sh_image_height)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_x, self.ea_font_file.sh_center_x)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_y, self.ea_font_file.sh_center_y)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_x, self.ea_font_file.sh_shape_x)
+            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_y, self.ea_font_file.sh_shape_y)
 
             # set font flags fields
             self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_flags_dec, self.ea_font_file.fh_font_flags)
             self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_flags_hex, convert_int_to_hex_string(self.ea_font_file.fh_font_flags))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_antialiased_flag, self.ea_font_file.ff_antialiased)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_dropshadow_flag, self.ea_font_file.ff_dropshadow)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_outline_flag, self.ea_font_file.ff_outline)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_vram_flag, self.ea_font_file.ff_vram)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_baseline_flag, self.ea_font_file.ff_baseline)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_orientation_flag, self.ea_font_file.ff_orientation)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_direction_flag, self.ea_font_file.ff_direction)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_encoding_flag, self.ea_font_file.ff_encoding)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_format_flag, self.ea_font_file.ff_format)
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_antialiased_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_antialiased))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_dropshadow_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_dropshadow))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_outline_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_outline))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_vram_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_vram))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_baseline_flag, self.get_text_for_baseline_flag(self.ea_font_file.ff_baseline))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_orientation_flag, self.get_text_for_orientation_flag(self.ea_font_file.ff_orientation))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_direction_flag, self.get_text_for_direction_flag(self.ea_font_file.ff_direction))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_encoding_flag, self.get_text_for_encoding_flag(self.ea_font_file.ff_encoding))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_format_flag, self.get_text_for_format_flag(self.ea_font_file.ff_format))
 
         elif self.ea_font_file.fh_sign in NEW_SHAPE_ALLOWED_SIGNATURES:
             raise Exception("New shapes not supported yet!")
@@ -257,6 +274,26 @@ class EAManGui:
             return "true"
         else:
             raise Exception("Not supported flag value!")
+
+    @staticmethod
+    def get_text_for_baseline_flag(flag_value: int) -> str:
+        return baseline_flags_mapping[flag_value]
+
+    @staticmethod
+    def get_text_for_orientation_flag(flag_value: int) -> str:
+        return orientation_flags_mapping[flag_value]
+
+    @staticmethod
+    def get_text_for_direction_flag(flag_value: int) -> str:
+        return direction_flags_mapping[flag_value]
+
+    @staticmethod
+    def get_text_for_encoding_flag(flag_value: int) -> str:
+        return encoding_flags_mapping[flag_value]
+
+    @staticmethod
+    def get_text_for_format_flag(flag_value: int) -> str:
+        return format_flags_mapping[flag_value]
 
     @staticmethod
     def close_toplevel_window(wind):

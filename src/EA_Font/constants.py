@@ -34,3 +34,31 @@ mipmaps_resampling_mapping: dict = {
     "bicubic": PIL.Image.Resampling.BICUBIC,
     "lanczos": PIL.Image.Resampling.LANCZOS
 }
+
+baseline_flags_mapping: dict = {
+    0: "Roman (english)",
+    1: "Ideographic (Kanji)",
+    2: "Hanging (Arabic)"
+}
+
+orientation_flags_mapping: dict = {
+    0: "Horizontal",
+    1: "Vertical"
+}
+
+direction_flags_mapping: dict = {
+    0: "Left-To-Right",
+    1: "Right-To-Left"
+}
+
+encoding_flags_mapping: dict = {
+    0: "ASCII",
+    1: "Unicode",
+    2: "Shift-JIS",
+    3: "Reserved"
+}
+
+format_flags_mapping: dict = {
+    0: "Character12",
+    1: "Character16",
+}
