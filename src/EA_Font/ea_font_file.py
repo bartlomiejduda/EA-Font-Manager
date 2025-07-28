@@ -66,16 +66,6 @@ class EAFontFile:
         self.fh_kerning_table_offset: Optional[int] = None
         self.fh_shape_header_offset: Optional[int] = None
 
-        # shape header fields
-        self.sh_record_id: Optional[int] = None
-        self.sh_next_bin_attachment_offset: Optional[int] = None
-        self.sh_image_width: Optional[int] = None
-        self.sh_image_height: Optional[int] = None
-        self.sh_center_x: Optional[int] = None
-        self.sh_center_y: Optional[int] = None
-        self.sh_shape_x: Optional[int] = None
-        self.sh_shape_y: Optional[int] = None
-
         # font flags fields
         self.ff_antialiased: Optional[int] = None
         self.ff_dropshadow: Optional[int] = None
@@ -88,10 +78,8 @@ class EAFontFile:
         self.ff_format: Optional[int] = None
 
         # data fields
-        # self.raw_image_data: Optional[bytes] = None
-        # self.binary_attachments_list: list[BinAttachmentEntry] = []
-        self.num_of_entries = 1
-        self.dir_entry_id = 0
+        self.num_of_entries: int = 1
+        self.dir_entry_id: int = 0
         self.dir_entry_list: list[DirEntry] = []
 
         # local fields
@@ -154,17 +142,6 @@ class EAFontFile:
         self.fh_shape_header_offset = get_uint32(in_file, self.f_endianess)
         return  # header has been parsed
 
-    # def parse_shape_header(self, in_file) -> None:
-    #     in_file.seek(self.fh_shape_header_offset)
-    #     self.sh_record_id = get_uint8(in_file, self.f_endianess)
-    #     self.sh_next_bin_attachment_offset = get_uint24(in_file, self.f_endianess)
-    #     self.sh_image_width = get_uint16(in_file, self.f_endianess)
-    #     self.sh_image_height = get_uint16(in_file, self.f_endianess)
-    #     self.sh_center_x = get_int16(in_file, self.f_endianess)
-    #     self.sh_center_y = get_int16(in_file, self.f_endianess)
-    #     self.sh_shape_x = get_uint16(in_file, self.f_endianess)
-    #     self.sh_shape_y = get_uint16(in_file, self.f_endianess)
-
     def parse_font_flags(self) -> None:
         self.ff_antialiased = get_bits(self.fh_font_flags, 1, 0)
         self.ff_dropshadow = get_bits(self.fh_font_flags, 1, 1)
@@ -176,39 +153,15 @@ class EAFontFile:
         self.ff_encoding = get_bits(self.fh_font_flags, 2, 16)
         self.ff_format = get_bits(self.fh_font_flags, 1, 18)
 
-    # def parse_shape_entry(self, in_file) -> None:
-    #     # parse header
-    #     self.parse_shape_header(in_file)
-    #
-    #     # parse image data
-    #     image_bpp: int = get_bpp_for_image_type(self.sh_record_id)
-    #     if image_bpp == 4:
-    #         image_data_size = self.sh_image_width * self.sh_image_height // 2
-    #     elif image_bpp >= 8:
-    #         image_data_size = self.sh_image_width * self.sh_image_height * convert_bpp_to_bytes_per_pixel(image_bpp)
-    #     else:
-    #         raise Exception("Image bpp not supported!")
-    #
-    #     self.raw_image_data = in_file.read(image_data_size)
-    #
-    #     # parse binary attachments
-    #     if self.sh_next_bin_attachment_offset != 0:
-    #         while 1:
-    #             record_id =
-    #             binary_attachment_entry: BinAttachmentEntry = BinAttachmentEntry(
-    #                 record_id = get_uint8(in_file, self.f_endianess),
-    #                 next_bin_attachment_offset = get_uint24(in_file, self.f_endianess),
-    #             )
-
-
-    # ATTENTION! For font files there should be only one dir entry per file
+    # ATTENTION! This function has been rewritten to match font files logic.
+    # There should be only one dir entry for each font file.
     def parse_directory(self, in_file) -> bool:
         # creating directory entries
 
         in_file.seek(self.fh_shape_header_offset)
         for i in range(self.num_of_entries):
             self.dir_entry_id += 1
-            entry_id ="img_id" + "_direntry_" + str(self.dir_entry_id)
+            entry_id = "img_id" + "_direntry_" + str(self.dir_entry_id)
             entry_start_offset = in_file.tell()
             entry_tag = "entry_tag_" + str(self.dir_entry_id)
             ea_dir_entry = DirEntry(entry_id, entry_tag, entry_start_offset)

@@ -167,7 +167,6 @@ class EAManGui:
 
         logger.info(f"Loading file {in_file_name}...")
 
-
         # Parse EA Font File
         self.ea_font_file.parse_file_header(in_file, in_file_path, in_file_name)
         self.ea_font_file.parse_font_flags()
@@ -188,26 +187,6 @@ class EAManGui:
             self.entry_preview.init_image_preview_not_supported_logic()
         # image preview logic END
 
-        # self.ea_font_file.parse_directory(in_file)
-
-        # check if there are any bin attachments
-        # and add them to the list if found
-        # ea_img.parse_bin_attachments(in_file)
-
-        # convert all supported images
-        # in the ea_img file
-        # try:
-        #     logger.info("Starting processing with convert_images function")
-        #     self.loading_label = tk.Label(self.main_frame, text="Loading... Please wait.", font=("Arial", 14))
-        #     if ea_img.total_f_size > 200000:
-        #         self.loading_label.place(x=0, y=0, relwidth=1, relheight=1)
-        #         self.loading_label.update()
-        #     ea_img.convert_images(self)
-        #     self.loading_label.destroy()
-        # except Exception as error:
-        #     logger.error(f"Error while converting images! Error: {error}")
-        #     logger.error(traceback.format_exc())
-
         # set text for header
         if self.ea_font_file.fh_sign in OLD_SHAPE_ALLOWED_SIGNATURES:
             # set file header fields
@@ -225,14 +204,20 @@ class EAManGui:
             self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_shape_header_offset, self.ea_font_file.fh_shape_header_offset)
 
             # set shape header fields
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_record_id, self.ea_font_file.sh_record_id)
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_next_binary_attachment_offset, self.ea_font_file.sh_next_bin_attachment_offset)
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_width, self.ea_font_file.sh_image_width)
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_height, self.ea_font_file.sh_image_height)
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_x, self.ea_font_file.sh_center_x)
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_y, self.ea_font_file.sh_center_y)
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_x, self.ea_font_file.sh_shape_x)
-            # self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_y, self.ea_font_file.sh_shape_y)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_record_id, self.ea_font_file.dir_entry_list[0].h_record_id)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_next_binary_attachment_offset, self.ea_font_file.dir_entry_list[0].h_size_of_the_block)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_width, self.ea_font_file.dir_entry_list[0].h_width)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_height, self.ea_font_file.dir_entry_list[0].h_height)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_x, self.ea_font_file.dir_entry_list[0].h_center_x)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_center_y, self.ea_font_file.dir_entry_list[0].h_center_y)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_x, self.ea_font_file.dir_entry_list[0].h_default_x_position)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_y, self.ea_font_file.dir_entry_list[0].h_default_y_position)
+
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_type, self.ea_font_file.dir_entry_list[0].get_entry_type())
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_mipmaps,self.ea_font_file.dir_entry_list[0].h_mipmaps_count)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_comp, self.ea_font_file.dir_entry_list[0].h_is_image_compressed_masked)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_flag_swizzle, self.ea_font_file.dir_entry_list[0].h_flag2_swizzled)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_bpp, self.ea_font_file.dir_entry_list[0].h_image_bpp)
 
             # set font flags fields
             self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_flags_dec, self.ea_font_file.fh_font_flags)

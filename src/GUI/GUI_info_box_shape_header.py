@@ -100,3 +100,60 @@ class GuiShapeHeaderInfoBox(tk.Frame):
         )
         self.sh_text_shape_y.place(x=310, y=95, width=120, height=20)
         self.sh_text_shape_y.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+
+        # Extra Fields Below
+
+        # Image Type
+        self.sh_label_image_type = tk.Label(self.file_header_labelframe, text="Image Type:", anchor="w")
+        self.sh_label_image_type.place(x=5, y=125, width=90, height=20)
+        self.sh_text_image_type = tk.Text(
+            self.file_header_labelframe,
+            bg=self.file_header_labelframe["bg"],
+            state="disabled",
+        )
+        self.sh_text_image_type.place(x=105, y=125, width=325, height=20)
+        self.sh_text_image_type.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+
+        # Mipmaps Count
+        self.sh_label_mipmaps = tk.Label(self.file_header_labelframe, text="Mipmaps:", anchor="w")
+        self.sh_label_mipmaps.place(x=5, y=155, width=90, height=20)
+        self.sh_text_mipmaps = tk.Text(
+            self.file_header_labelframe,
+            bg=self.file_header_labelframe["bg"],
+            state="disabled",
+        )
+        self.sh_text_mipmaps.place(x=105, y=155, width=105, height=20)
+        self.sh_text_mipmaps.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+
+        # Image compression
+        self.sh_label_image_comp = tk.Label(self.file_header_labelframe, text="IMG Comp:", anchor="w")
+        self.sh_label_image_comp.place(x=235, y=155, width=90, height=20)
+        self.sh_text_image_comp = tk.Text(
+            self.file_header_labelframe,
+            bg=self.file_header_labelframe["bg"],
+            state="disabled",
+        )
+        self.sh_text_image_comp.place(x=310, y=155, width=120, height=20)
+        self.sh_text_image_comp.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+
+        # Flag Swizzle
+        self.sh_label_flag_swizzle = tk.Label(self.file_header_labelframe, text="Flag Swiz:", anchor="w")
+        self.sh_label_flag_swizzle.place(x=5, y=185, width=90, height=20)
+        self.sh_text_flag_swizzle = tk.Text(
+            self.file_header_labelframe,
+            bg=self.file_header_labelframe["bg"],
+            state="disabled",
+        )
+        self.sh_text_flag_swizzle.place(x=105, y=185, width=105, height=20)
+        self.sh_text_flag_swizzle.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
+
+        # Image BPP
+        self.sh_label_image_bpp = tk.Label(self.file_header_labelframe, text="Image bpp:", anchor="w")
+        self.sh_label_image_bpp.place(x=235, y=185, width=90, height=20)
+        self.sh_text_image_bpp = tk.Text(
+            self.file_header_labelframe,
+            bg=self.file_header_labelframe["bg"],
+            state="disabled",
+        )
+        self.sh_text_image_bpp.place(x=310, y=185, width=120, height=20)
+        self.sh_text_image_bpp.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
