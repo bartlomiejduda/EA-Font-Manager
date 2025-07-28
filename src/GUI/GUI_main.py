@@ -15,11 +15,16 @@ from reversebox.compression.compression_refpack import RefpackHandler
 
 from src.EA_Font.constants import (
     NEW_SHAPE_ALLOWED_SIGNATURES,
-    OLD_SHAPE_ALLOWED_SIGNATURES, baseline_flags_mapping, orientation_flags_mapping, direction_flags_mapping,
-    encoding_flags_mapping, format_flags_mapping,
+    OLD_SHAPE_ALLOWED_SIGNATURES,
+    baseline_flags_mapping,
+    direction_flags_mapping,
+    encoding_flags_mapping,
+    format_flags_mapping,
+    orientation_flags_mapping,
 )
 from src.EA_Font.ea_font_file import EAFontFile
 from src.GUI.about_window import AboutWindow
+from src.GUI.GUI_characters_table import GuiCharactersTable
 from src.GUI.GUI_entry_preview import GuiEntryPreview
 from src.GUI.GUI_menu import GuiMenu
 from src.GUI.GUI_tab_controller import GuiTabController
@@ -88,6 +93,7 @@ class EAManGui:
         # gui objects
         self.entry_preview = GuiEntryPreview(self.main_frame, self)
         self.tab_controller = GuiTabController(self.main_frame, self)
+        self.character_table = GuiCharactersTable(self.main_frame, self)
         self.menu = GuiMenu(self.master, self)
         self.loading_label = None
 
@@ -214,7 +220,7 @@ class EAManGui:
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_shape_y, self.ea_font_file.dir_entry_list[0].h_default_y_position)
 
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_type, self.ea_font_file.dir_entry_list[0].get_entry_type())
-            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_mipmaps,self.ea_font_file.dir_entry_list[0].h_mipmaps_count)
+            self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_mipmaps, self.ea_font_file.dir_entry_list[0].h_mipmaps_count)
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_comp, self.ea_font_file.dir_entry_list[0].h_is_image_compressed_masked)
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_flag_swizzle, self.ea_font_file.dir_entry_list[0].h_flag2_swizzled)
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_bpp, self.ea_font_file.dir_entry_list[0].h_image_bpp)

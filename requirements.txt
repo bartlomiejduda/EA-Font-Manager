@@ -7,3 +7,4 @@ pyperclip==1.9.0
 pytest==8.3.3
 pytz==2024.2
 ReverseBox>=0.48.0
+tksheet==7.5.12

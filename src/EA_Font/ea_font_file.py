@@ -10,17 +10,14 @@ from typing import Optional
 
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
-from reversebox.image.common import convert_bpp_to_bytes_per_pixel
 from reversebox.io_files.bytes_helper_functions import get_bits
 
-from src.EA_Font.attachments.bin_attachment_entry import BinAttachmentEntry
 from src.EA_Font.attachments.comment_entry import CommentEntry
 from src.EA_Font.attachments.hot_spot_entry import HotSpotEntry
 from src.EA_Font.attachments.img_name_entry import ImgNameEntry
 from src.EA_Font.attachments.metal_bin_entry import MetalBinEntry
 from src.EA_Font.attachments.palette_entry import PaletteEntry
 from src.EA_Font.attachments.unknown_entry import UnknownEntry
-from src.EA_Font.common import get_bpp_for_image_type
 from src.EA_Font.common_ea_dir import (
     get_palette_info_dto_from_dir_entry,
     handle_image_swizzle_logic,
@@ -29,19 +26,10 @@ from src.EA_Font.common_ea_dir import (
 )
 from src.EA_Font.constants import (
     CONVERT_IMAGES_SUPPORTED_TYPES,
-    NEW_SHAPE_ALLOWED_SIGNATURES,
     OLD_SHAPE_ALLOWED_SIGNATURES,
     PALETTE_TYPES,
 )
-from src.EA_Font.data_read import (
-    get_int16,
-    get_null_terminated_string,
-    get_string,
-    get_uint8,
-    get_uint16,
-    get_uint24,
-    get_uint32,
-)
+from src.EA_Font.data_read import get_string, get_uint8, get_uint16, get_uint32
 from src.EA_Font.dir_entry import DirEntry
 from src.EA_Font.dto import PaletteInfoDTO
 from src.EA_Font.ea_image_decoder import decode_image_data_by_entry_type

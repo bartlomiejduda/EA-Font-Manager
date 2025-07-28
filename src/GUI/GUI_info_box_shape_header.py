@@ -136,8 +136,8 @@ class GuiShapeHeaderInfoBox(tk.Frame):
         self.sh_text_image_comp.place(x=310, y=155, width=120, height=20)
         self.sh_text_image_comp.bind("<Button-3>", lambda event, arg=self: RightClicker(arg, event))
 
-        # Flag Swizzle
-        self.sh_label_flag_swizzle = tk.Label(self.file_header_labelframe, text="Flag Swiz:", anchor="w")
+        # Swizzle Flag
+        self.sh_label_flag_swizzle = tk.Label(self.file_header_labelframe, text="Swizzle Flag:", anchor="w")
         self.sh_label_flag_swizzle.place(x=5, y=185, width=90, height=20)
         self.sh_text_flag_swizzle = tk.Text(
             self.file_header_labelframe,
