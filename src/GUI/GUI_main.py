@@ -7,6 +7,7 @@ import io
 import os
 import tkinter as tk
 from configparser import ConfigParser
+from dataclasses import fields
 from tkinter import filedialog, messagebox
 
 from reversebox.common.common import convert_int_to_hex_string
@@ -23,6 +24,7 @@ from src.EA_Font.constants import (
     orientation_flags_mapping,
 )
 from src.EA_Font.ea_font_file import EAFontFile
+from src.EA_Font.font_dto.character12_entry import Character12Entry
 from src.GUI.about_window import AboutWindow
 from src.GUI.GUI_characters_table import GuiCharactersTable
 from src.GUI.GUI_entry_preview import GuiEntryPreview
@@ -179,6 +181,7 @@ class EAManGui:
         self.ea_font_file.parse_directory(in_file)
         self.ea_font_file.parse_bin_attachments(in_file)
         self.ea_font_file.convert_images(self)
+        self.ea_font_file.parse_character_table(in_file)
 
         # image preview logic START
         try:
@@ -187,7 +190,7 @@ class EAManGui:
             pass
 
         if self.ea_font_file.dir_entry_list[0].is_img_convert_supported:
-            self.entry_preview.init_image_preview_logic(self.ea_font_file.dir_entry_list[0], "aaaa")
+            self.entry_preview.init_image_preview_logic(self.ea_font_file.dir_entry_list[0], "preview_item_iid")
 
         else:
             self.entry_preview.init_image_preview_not_supported_logic()
@@ -243,8 +246,22 @@ class EAManGui:
         else:
             raise Exception("Not supported signature!")
 
+        # set character table
+        if self.ea_font_file.ff_format == 0:  # Character12
+            self.character_table.character_table.headers(["Char Index", "Width", "Height", "U", "V", "Advance", "X-Offset", "Y-Offset", "NumKern"])
+            self.character_table.character_table.column_width(0, 120)  # char index
+
+            char_data = [[chr(getattr(char12, f.name)) if f.name == "index" else getattr(char12, f.name) for f in fields(Character12Entry)]
+                    for char12 in self.ea_font_file.character_entry_list]
+            self.character_table.character_table.set_sheet_data(char_data)
+
+        elif self.ea_font_file.ff_format == 1:  # Character16
+            self.character_table.character_table.headers(["Char Index", "Width", "Height", "U", "V", "AdvanceY", "X-Offset", "Y-Offset", "NumKern", "KernIndex", "AdvanceX"])
+        else:
+            raise Exception("Unknown format flag value!")
 
         in_file.close()
+        return  # file opened successfully
 
     def show_about_window(self):
         if not any(isinstance(x, tk.Toplevel) for x in self.master.winfo_children()):

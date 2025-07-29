@@ -15,14 +15,7 @@ class GuiCharactersTable(tk.Frame):
         self.character_table_width = 935
         self.character_table_height = 190
 
-        data = [
-            [f"Dane {i + 1}.1", f"Dane {i + 1}.2", f"Dane {i + 1}.3"]
-            for i in range(50)
-        ]
-
         self.character_table = Sheet(parent,
-                                     data=data,
-                                     headers=["Kolumna 1", "Kolumna 2", "Kolumna 3"],
                                      width=self.character_table_width,
                                      height=self.character_table_height)
 

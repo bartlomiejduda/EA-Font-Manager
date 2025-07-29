@@ -6,7 +6,7 @@ License: GPL-3.0 License
 import os
 import struct
 import traceback
-from typing import Optional
+from typing import Optional, Union
 
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
@@ -33,6 +33,8 @@ from src.EA_Font.data_read import get_string, get_uint8, get_uint16, get_uint32
 from src.EA_Font.dir_entry import DirEntry
 from src.EA_Font.dto import PaletteInfoDTO
 from src.EA_Font.ea_image_decoder import decode_image_data_by_entry_type
+from src.EA_Font.font_dto.character12_entry import Character12Entry
+from src.EA_Font.font_dto.character16_entry import Character16Entry
 
 logger = get_logger(__name__)
 
@@ -43,7 +45,7 @@ class EAFontFile:
         # file header fields
         self.fh_sign: Optional[str] = None
         self.fh_total_f_size: Optional[int] = None
-        self.fh_file_version: Optional[str] = None
+        self.fh_file_version: Optional[int] = None
         self.fh_num_of_characters: Optional[int] = None
         self.fh_font_flags: Optional[int] = None
         self.fh_center_x: Optional[int] = None
@@ -69,6 +71,7 @@ class EAFontFile:
         self.num_of_entries: int = 1
         self.dir_entry_id: int = 0
         self.dir_entry_list: list[DirEntry] = []
+        self.character_entry_list: list[Union[Character12Entry, Character16Entry]] = []
 
         # local fields
         self.total_f_data: Optional[bytes] = None
@@ -140,6 +143,28 @@ class EAFontFile:
         self.ff_direction = get_bits(self.fh_font_flags, 1, 11)
         self.ff_encoding = get_bits(self.fh_font_flags, 2, 16)
         self.ff_format = get_bits(self.fh_font_flags, 1, 18)
+
+    def parse_character_table(self, in_file) -> None:
+        in_file.seek(self.fh_char_info_offset)
+        if self.ff_format == 0:  # Character12
+            for i in range(self.fh_num_of_characters):
+                self.character_entry_list.append(
+                    Character12Entry(
+                        index=get_uint16(in_file, self.f_endianess),
+                        width=get_uint8(in_file, self.f_endianess),
+                        height=get_uint8(in_file, self.f_endianess),
+                        u=get_uint16(in_file, self.f_endianess),
+                        v=get_uint16(in_file, self.f_endianess),
+                        advance=get_uint8(in_file, self.f_endianess),
+                        x_offset=get_uint8(in_file, self.f_endianess),
+                        y_offset=get_uint8(in_file, self.f_endianess),
+                        num_kern=get_uint8(in_file, self.f_endianess) if self.fh_file_version >= 200 else None,
+                    )
+                )
+        elif self.ff_format == 1:  # Character16
+            pass
+        else:
+            raise Exception("Not supported format flag!")
 
     # ATTENTION! This function has been rewritten to match font files logic.
     # There should be only one dir entry for each font file.
