@@ -10,9 +10,10 @@ from configparser import ConfigParser
 from dataclasses import fields
 from tkinter import filedialog, messagebox
 
-from reversebox.common.common import convert_int_to_hex_string
+from reversebox.common.common import convert_int_to_hex_string, get_file_extension_uppercase
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
+from reversebox.image.pillow_wrapper import PillowWrapper
 
 from src.EA_Font.constants import (
     NEW_SHAPE_ALLOWED_SIGNATURES,
@@ -249,11 +250,20 @@ class EAManGui:
         # set character table
         if self.ea_font_file.ff_format == 0:  # Character12
             self.character_table.character_table.headers(["Char Index", "Width", "Height", "U", "V", "Advance", "X-Offset", "Y-Offset", "NumKern"])
-            self.character_table.character_table.column_width(0, 120)  # char index
 
             char_data = [[chr(getattr(char12, f.name)) if f.name == "index" else getattr(char12, f.name) for f in fields(Character12Entry)]
                     for char12 in self.ea_font_file.character_entry_list]
             self.character_table.character_table.set_sheet_data(char_data)
+
+            self.character_table.character_table.column_width(0, 90)  # char index
+            self.character_table.character_table.column_width(1, 90)  # width
+            self.character_table.character_table.column_width(2, 90)  # height
+            self.character_table.character_table.column_width(3, 90)  # u
+            self.character_table.character_table.column_width(4, 90)  # v
+            self.character_table.character_table.column_width(5, 90)  # advance
+            self.character_table.character_table.column_width(6, 90)  # x-offset
+            self.character_table.character_table.column_width(7, 90)  # y-offset
+            self.character_table.character_table.column_width(8, 90)  # numkern
 
         elif self.ea_font_file.ff_format == 1:  # Character16
             self.character_table.character_table.headers(["Char Index", "Width", "Height", "U", "V", "AdvanceY", "X-Offset", "Y-Offset", "NumKern", "KernIndex", "AdvanceX"])
@@ -262,6 +272,51 @@ class EAManGui:
 
         in_file.close()
         return  # file opened successfully
+
+    def export_font_image(self) -> bool:
+        ea_dir = self.ea_font_file.dir_entry_list[0]
+        out_file = None
+        try:
+            out_file = filedialog.asksaveasfile(
+                mode="wb",
+                defaultextension=".dds",
+                initialdir=self.current_save_directory_path,
+                initialfile="exported_font" + "_" + "image",
+                filetypes=(("DDS files", "*.dds"), ("PNG files", "*.png"), ("BMP files", "*.bmp")),
+            )
+            try:
+                selected_directory = os.path.dirname(out_file.name)
+            except Exception:
+                selected_directory = ""
+            self.current_save_directory_path = selected_directory  # set directory path from history
+            self.user_config.set(
+                "config", "save_directory_path", selected_directory
+            )  # save directory path to config file
+            with open(self.user_config_file_name, "w") as configfile:
+                self.user_config.write(configfile)
+        except Exception as error:
+            logger.error(f"Error: {error}")
+            messagebox.showwarning("Warning", "Failed to save file!")
+        if out_file is None:
+            return False  # user closed file dialog on purpose
+
+        # pack converted RGBA data
+        file_extension: str = get_file_extension_uppercase(out_file.name)
+        pillow_wrapper = PillowWrapper()
+        out_data = pillow_wrapper.get_pil_image_file_data_for_export(
+            ea_dir.img_convert_data, ea_dir.h_width, ea_dir.h_height, pillow_format=file_extension
+        )
+        del pillow_wrapper
+        if not out_data:
+            logger.error("Empty data to export!")
+            messagebox.showwarning("Warning", "Empty image data! Export not possible!")
+            return False
+
+        out_file.write(out_data)
+        out_file.close()
+        messagebox.showinfo("Info", "File saved successfully!")
+        logger.info(f"Image has been exported successfully to {out_file.name}")
+        return True
 
     def show_about_window(self):
         if not any(isinstance(x, tk.Toplevel) for x in self.master.winfo_children()):

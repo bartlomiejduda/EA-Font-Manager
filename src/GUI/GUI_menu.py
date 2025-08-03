@@ -20,7 +20,7 @@ class GuiMenu(tk.Frame):
 
         # options submenu
         self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
-        self.toolsmenu.add_command(label="Export Font Image", command=lambda: gui_main.show_about_window())
+        self.toolsmenu.add_command(label="Export Font Image", command=lambda: gui_main.export_font_image())
         self.toolsmenu.add_command(label="Import Font Image", command=lambda: gui_main.show_about_window())
 
         # help submenu

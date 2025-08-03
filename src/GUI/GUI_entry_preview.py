@@ -1,5 +1,6 @@
 import math
 import tkinter as tk
+from typing import Optional
 
 from PIL import Image, ImageTk
 from reversebox.common.logger import get_logger
@@ -15,6 +16,7 @@ class GuiEntryPreview(tk.Frame):
     def __init__(self, parent, gui_main):
         super().__init__(parent)
 
+        self.gui_main = gui_main
         self.preview_labelframe_width = 440
         self.preview_labelframe_height = 250
         self.canvas_height = self.preview_labelframe_height - 30
@@ -23,7 +25,13 @@ class GuiEntryPreview(tk.Frame):
         self.preview_labelframe.place(x=500, y=5, width=self.preview_labelframe_width, height=self.preview_labelframe_height)
 
         self.ph_img = None
-        self.preview_instance = None
+
+        self.canvas_image_id: Optional[int] = None
+        self.red_rectangle_id: Optional[int] = None
+        self.resized_width: Optional[int] = None
+        self.resized_height: Optional[int] = None
+        self.ratio: int = 0
+        self.preview_instance: Optional[tk.Canvas] = None
 
     def init_image_preview_logic(self, ea_dir, item_iid):
         if not ea_dir.img_convert_data or len(ea_dir.img_convert_data) == 0:
@@ -44,16 +52,16 @@ class GuiEntryPreview(tk.Frame):
             # resize preview logic
             if pil_img.height >= pil_img.width:
                 if pil_img.height > self.canvas_height:
-                    ratio: float = self.canvas_height / pil_img.height
-                    resized_height: int = int(pil_img.height * ratio)
-                    resized_width: int = int(pil_img.width * ratio)
-                    pil_img = pil_img.resize((resized_width, resized_height))
+                    self.ratio: float = self.canvas_height / pil_img.height
+                    self.resized_height: int = int(pil_img.height * self.ratio)
+                    self.resized_width: int = int(pil_img.width * self.ratio)
+                    pil_img = pil_img.resize((self.resized_width, self.resized_height))
             else:
                 if pil_img.width > self.canvas_width:
-                    ratio: float = self.canvas_width / pil_img.width
-                    resized_height: int = int(pil_img.height * ratio)
-                    resized_width: int = int(pil_img.width * ratio)
-                    pil_img = pil_img.resize((resized_width, resized_height))
+                    self.ratio: float = self.canvas_width / pil_img.width
+                    self.resized_height: int = int(pil_img.height * self.ratio)
+                    self.resized_width: int = int(pil_img.width * self.ratio)
+                    pil_img = pil_img.resize((self.resized_width, self.resized_height))
 
             self.ph_img = ImageTk.PhotoImage(pil_img)
 
@@ -63,7 +71,7 @@ class GuiEntryPreview(tk.Frame):
                 width=self.canvas_width,
                 height=self.canvas_height,
             )
-            self.preview_instance.create_image(
+            self.canvas_image_id = self.preview_instance.create_image(
                 int(self.canvas_width / 2),
                 int(self.canvas_height / 2),
                 anchor="center",
@@ -137,3 +145,26 @@ class GuiEntryPreview(tk.Frame):
 
         except Exception as error:
             logger.error(f"Error occurred while generating preview palette... Error: {error}")
+
+    def draw_red_rectangle(self, selected_row_data: list) -> None:
+        if self.gui_main.ea_font_file.ff_format == 0:  # Character12
+            width = selected_row_data[1]
+            height = selected_row_data[2]
+            u = selected_row_data[3]
+            v = selected_row_data[4]
+        else:
+            raise Exception("Character format not supported!")
+
+        if self.preview_instance and self.canvas_image_id:
+            if self.red_rectangle_id:
+                self.preview_instance.delete(self.red_rectangle_id)
+            img_center_x, img_center_y = self.preview_instance.coords(self.canvas_image_id)
+            img_x = int(img_center_x) - self.resized_width // 2
+            img_y = int(img_center_y) - self.resized_height // 2
+
+            rect_x = int(u * self.ratio) + img_x
+            rect_y = int(v * self.ratio) + img_y
+            rect_x2 = int((u + width) * self.ratio) + img_x
+            rect_y2 = int((v + height) * self.ratio) + img_y
+
+            self.red_rectangle_id = self.preview_instance.create_rectangle(rect_x, rect_y, rect_x2, rect_y2, fill="", outline="red")
