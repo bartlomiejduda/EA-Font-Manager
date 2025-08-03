@@ -20,18 +20,18 @@ def get_null_terminated_string(in_file, encoding="utf8") -> str:
         binary_str += c
 
 
-def get_uint8(in_file, endianess):
+def get_uint8(in_file, endianess) -> int:
     result = struct.unpack(endianess + "B", in_file.read(1))[0]
     return result
 
 
-def get_uint16(in_file, endianess):
+def get_uint16(in_file, endianess) -> int:
     result = struct.unpack(endianess + "H", in_file.read(2))[0]
     return result
 
 
 # needed for center_x and center_y
-def get_int16(in_file, endianess):
+def get_int16(in_file, endianess) -> int:
     result = struct.unpack(endianess + "h", in_file.read(2))[0]
     return result
 
@@ -95,7 +95,7 @@ def get_uint12_uint4(in_file, endianess) -> list:
     return out_list
 
 
-def get_uint24(in_file, endianess):
+def get_uint24(in_file, endianess) -> int:
     if endianess == "<":
         result = struct.unpack(endianess + "I", in_file.read(3) + b"\x00")[0]
     else:
@@ -103,11 +103,11 @@ def get_uint24(in_file, endianess):
     return result
 
 
-def get_uint32(in_file, endianess):
+def get_uint32(in_file, endianess) -> int:
     result = struct.unpack(endianess + "L", in_file.read(4))[0]
     return result
 
 
-def get_uint64(in_file, endianess):
+def get_uint64(in_file, endianess) -> int:
     result = struct.unpack(endianess + "Q", in_file.read(8))[0]
     return result

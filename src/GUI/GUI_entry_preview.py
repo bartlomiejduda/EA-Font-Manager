@@ -155,7 +155,7 @@ class GuiEntryPreview(tk.Frame):
         else:
             raise Exception("Character format not supported!")
 
-        if self.preview_instance and self.canvas_image_id:
+        if self.preview_instance and self.canvas_image_id and isinstance(self.preview_instance, tk.Canvas):
             if self.red_rectangle_id:
                 self.preview_instance.delete(self.red_rectangle_id)
             img_center_x, img_center_y = self.preview_instance.coords(self.canvas_image_id)

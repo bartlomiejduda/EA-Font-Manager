@@ -42,15 +42,15 @@ It may not support all existing font types yet.
 |-------------------------------------------------|-------------------------|--------------------|
 | EA Sports Cricket 07 (PC)                       | <center>❌</center>      | <center>❌</center> |
 | FA Premier League 2000 (PS1)                    | <center>✔️ / ❌</center> | <center>❌</center> |
-| FIFA 97 (PC)                                    | <center>❌</center>      | <center>❌</center> |
+| FIFA 97 (PC)                                    | <center>✔️ / ❌</center> | <center>❌</center> |
 | Medal of Honor: European Assault (Xbox Classic) | <center>❌</center>      | <center>❌</center> |
 | NBA Live 07 (Xbox Classic)                      | <center>❌</center>      | <center>❌</center> |
 | Need For Speed 2 (PS1)                          | <center>✔️ / ❌</center> | <center>❌</center> |
 | Need For Speed 2 BETA (PC)                      | <center>❌</center>      | <center>❌</center> |
-| Need For Speed: High Stakes (PC)                | <center>❌</center>      | <center>❌</center> |
+| Need For Speed: High Stakes (PC)                | <center>✔️ / ❌</center> | <center>❌</center> |
 | Need For Speed: Hot Pursuit 2 (PC)              | <center>✔️ / ❌</center> | <center>❌</center> |
-| Need For Speed III: Hot Pursuit (PC)            | <center>❌</center>      | <center>❌</center> |
-| Need For Speed: Porsche Unleashed (PC)          | <center>❌</center>      | <center>❌</center> |
+| Need For Speed III: Hot Pursuit (PC)            | <center>✔️ / ❌</center> | <center>❌</center> |
+| Need For Speed: Porsche Unleashed (PC)          | <center>✔️ / ❌</center> | <center>❌</center> |
 | Need For Speed: Undercover (PSP)                | <center>❌</center>      | <center>❌</center> |
 | SSX 1 (PS2)                                     | <center>✔️ / ❌</center> | <center>❌</center> |
 | SSX 3 (PS2)                                     | <center>✔️ / ❌</center> | <center>❌</center> |
