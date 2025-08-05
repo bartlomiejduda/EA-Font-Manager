@@ -22,9 +22,17 @@ OLD_SHAPE_ALLOWED_SIGNATURES = (
     "FNTM",  # PSP games
     "FNTG",  # WII/Gamecube games
     "FNTA",  # Game Boy Advance games
+
+    "FntF",  # PC games
+    "FntP",  # PS1 games
+    "FntS",  # PS2 games
+    "FntX",  # XBOX games
+    "FntM",  # PSP games
+    "FntG",  # WII/Gamecube games
+    "FntA",  # Game Boy Advance games
 )
 
-NEW_SHAPE_ALLOWED_SIGNATURES = ()  # TODO
+NEW_SHAPE_ALLOWED_SIGNATURES = ()
 
 mipmaps_resampling_mapping: dict = {
     "nearest": PIL.Image.Resampling.NEAREST,

@@ -10,7 +10,10 @@ from configparser import ConfigParser
 from dataclasses import fields
 from tkinter import filedialog, messagebox
 
-from reversebox.common.common import convert_int_to_hex_string, get_file_extension_uppercase
+from reversebox.common.common import (
+    convert_int_to_hex_string,
+    get_file_extension_uppercase,
+)
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
 from reversebox.image.pillow_wrapper import PillowWrapper
@@ -198,7 +201,7 @@ class EAManGui:
         # image preview logic END
 
         # set text for header
-        if self.ea_font_file.fh_sign in OLD_SHAPE_ALLOWED_SIGNATURES:
+        if self.ea_font_file.fh_sign in OLD_SHAPE_ALLOWED_SIGNATURES or self.ea_font_file.fh_sign in NEW_SHAPE_ALLOWED_SIGNATURES:
             # set file header fields
             self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_sign, self.ea_font_file.fh_sign)
             self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_total_f_size, self.ea_font_file.fh_total_f_size)
@@ -213,7 +216,23 @@ class EAManGui:
             self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_kerning_table_offset, self.ea_font_file.fh_kerning_table_offset)
             self.set_text_in_box(self.tab_controller.file_header_info_box.fh_text_shape_header_offset, self.ea_font_file.fh_shape_header_offset)
 
-            # set shape header fields
+            # set font flags fields
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_flags_dec, self.ea_font_file.fh_font_flags)
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_flags_hex, convert_int_to_hex_string(self.ea_font_file.fh_font_flags))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_antialiased_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_antialiased))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_dropshadow_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_dropshadow))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_outline_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_outline))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_vram_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_vram))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_baseline_flag, self.get_text_for_baseline_flag(self.ea_font_file.ff_baseline))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_orientation_flag, self.get_text_for_orientation_flag(self.ea_font_file.ff_orientation))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_direction_flag, self.get_text_for_direction_flag(self.ea_font_file.ff_direction))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_encoding_flag, self.get_text_for_encoding_flag(self.ea_font_file.ff_encoding))
+            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_format_flag, self.get_text_for_format_flag(self.ea_font_file.ff_format))
+        else:
+            raise Exception("Not supported signature!")
+
+        if self.ea_font_file.fh_sign in OLD_SHAPE_ALLOWED_SIGNATURES:
+            # set OLD shape header fields
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_record_id, self.ea_font_file.dir_entry_list[0].h_record_id)
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_next_binary_attachment_offset, self.ea_font_file.dir_entry_list[0].h_size_of_the_block)
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_width, self.ea_font_file.dir_entry_list[0].h_width)
@@ -229,21 +248,6 @@ class EAManGui:
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_flag_swizzle, self.ea_font_file.dir_entry_list[0].h_flag2_swizzled)
             self.set_text_in_box(self.tab_controller.shape_header_info_box.sh_text_image_bpp, self.ea_font_file.dir_entry_list[0].h_image_bpp)
 
-            # set font flags fields
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_flags_dec, self.ea_font_file.fh_font_flags)
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_flags_hex, convert_int_to_hex_string(self.ea_font_file.fh_font_flags))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_antialiased_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_antialiased))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_dropshadow_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_dropshadow))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_outline_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_outline))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_vram_flag, self.get_text_for_bool_flag(self.ea_font_file.ff_vram))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_baseline_flag, self.get_text_for_baseline_flag(self.ea_font_file.ff_baseline))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_orientation_flag, self.get_text_for_orientation_flag(self.ea_font_file.ff_orientation))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_direction_flag, self.get_text_for_direction_flag(self.ea_font_file.ff_direction))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_encoding_flag, self.get_text_for_encoding_flag(self.ea_font_file.ff_encoding))
-            self.set_text_in_box(self.tab_controller.font_flags_info_box.ff_text_format_flag, self.get_text_for_format_flag(self.ea_font_file.ff_format))
-
-        elif self.ea_font_file.fh_sign in NEW_SHAPE_ALLOWED_SIGNATURES:
-            raise Exception("New shapes not supported yet!")
         else:
             raise Exception("Not supported signature!")
 
@@ -251,8 +255,7 @@ class EAManGui:
         if self.ea_font_file.ff_format == 0:  # Character12
             self.character_table.character_table.headers(["Char Index", "Width", "Height", "U", "V", "Advance", "X-Offset", "Y-Offset", "NumKern"])
 
-            char_data = [[chr(getattr(char12, f.name)) if f.name == "index" else getattr(char12, f.name) for f in fields(Character12Entry)]
-                    for char12 in self.ea_font_file.character_entry_list]
+            char_data = [[chr(getattr(char12, f.name)) if f.name == "index" else getattr(char12, f.name) for f in fields(Character12Entry)] for char12 in self.ea_font_file.character_entry_list]
             self.character_table.character_table.set_sheet_data(char_data)
 
             self.character_table.character_table.column_width(0, 90)  # char index

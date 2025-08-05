@@ -329,7 +329,7 @@ def decode_image_data_by_entry_type(
             ea_dir_entry.h_height,
             get_indexed_image_format(get_bpp_for_image_type(entry_type)),
             get_indexed_palette_format(palette_info_dto.entry_id, len(palette_info_dto.data)),
-            image_endianess="big"
+            image_endianess="big",
         )
     elif entry_type == 123:
         # for i in range(1024):
