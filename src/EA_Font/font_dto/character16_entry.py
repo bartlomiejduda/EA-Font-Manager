@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Character16Entry:
-    index: int
+    index: str
     width: int
     height: int
     u: int

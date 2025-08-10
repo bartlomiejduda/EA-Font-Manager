@@ -35,5 +35,6 @@ class GuiCharactersTable(tk.Frame):
         self.character_table.place(x=5, y=260, width=self.character_table_width, height=self.character_table_height)
 
     def on_row_click(self, event):
-        selected_row_data = self.character_table.get_row_data(event.selected.row)
-        self.gui_main.entry_preview.draw_red_rectangle(selected_row_data)
+        if event.selected:
+            selected_row_data = self.character_table.get_row_data(event.selected.row)
+            self.gui_main.entry_preview.draw_red_rectangle(selected_row_data)

@@ -146,11 +146,11 @@ class EAFontFile:
 
     def parse_character_table(self, in_file) -> None:
         in_file.seek(self.fh_char_info_offset)
-        if self.ff_format == 0:  # Character12
-            for i in range(self.fh_num_of_characters):
+        for i in range(self.fh_num_of_characters):
+            if self.ff_format == 0:  # Character12
                 self.character_entry_list.append(
                     Character12Entry(
-                        index=get_uint16(in_file, self.f_endianess),
+                        index=chr(get_uint16(in_file, self.f_endianess)),
                         width=get_uint8(in_file, self.f_endianess),
                         height=get_uint8(in_file, self.f_endianess),
                         u=get_uint16(in_file, self.f_endianess),
@@ -161,10 +161,24 @@ class EAFontFile:
                         num_kern=get_uint8(in_file, self.f_endianess) if self.fh_file_version >= 200 else None,
                     )
                 )
-        elif self.ff_format == 1:  # Character16
-            pass
-        else:
-            raise Exception("Not supported format flag!")
+            elif self.ff_format == 1:  # Character16
+                self.character_entry_list.append(
+                    Character16Entry(
+                        index=chr(get_uint16(in_file, self.f_endianess)),
+                        width=get_uint8(in_file, self.f_endianess),
+                        height=get_uint8(in_file, self.f_endianess),
+                        u=get_uint16(in_file, self.f_endianess),
+                        v=get_uint16(in_file, self.f_endianess),
+                        advance_y=get_uint8(in_file, self.f_endianess),
+                        x_offset=get_uint8(in_file, self.f_endianess),
+                        y_offset=get_uint8(in_file, self.f_endianess),
+                        num_kern=get_uint8(in_file, self.f_endianess),
+                        kern_index=get_uint16(in_file, self.f_endianess),
+                        advance_x=get_uint16(in_file, self.f_endianess),
+                    )
+                )
+            else:
+                raise Exception("Not supported format flag!")
 
     # ATTENTION! This function has been rewritten to match font files logic.
     # There should be only one dir entry for each font file.

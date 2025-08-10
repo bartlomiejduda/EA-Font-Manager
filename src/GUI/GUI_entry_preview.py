@@ -1,11 +1,8 @@
-import math
 import tkinter as tk
 from typing import Optional
 
 from PIL import Image, ImageTk
 from reversebox.common.logger import get_logger
-
-from src.EA_Font.attachments.palette_entry import PaletteEntry
 
 logger = get_logger(__name__)
 
@@ -37,6 +34,7 @@ class GuiEntryPreview(tk.Frame):
             return
 
         self.ea_dir = ea_dir
+        self.ratio = 1.0
 
         try:
             pil_img = Image.frombuffer(
@@ -93,67 +91,11 @@ class GuiEntryPreview(tk.Frame):
         )
         self.preview_instance.place(x=5, y=5, width=285, height=130)
 
-    def init_binary_preview_logic(self, bin_attachment):
-        preview_hex_string = bin_attachment.raw_data.decode("utf8", "backslashreplace").replace("\000", ".")[
-            0:200
-        ]  # limit preview to 200 characters
-        self.preview_instance = tk.Label(
-            self.preview_labelframe,
-            text=preview_hex_string,
-            anchor="nw",
-            justify="left",
-            wraplength=300,
-        )
-        self.preview_instance.place(x=5, y=5, width=285, height=130)
-
-    def init_palette_preview_logic(self, palette_entry: PaletteEntry):
-        palette_width: int = palette_entry.h_width
-        palette_height: int = palette_entry.h_height
-
-        try:
-            pil_img = Image.frombuffer(
-                "RGBA",
-                (math.ceil(palette_width / 2), math.ceil(palette_height / 2)),
-                palette_entry.raw_data,
-                "raw",
-                "RGBA",
-                0,
-                1,
-            )
-
-            if pil_img.height > self.canvas_height:
-                ratio = self.canvas_height / pil_img.height
-                pil_img = pil_img.resize((int(pil_img.width * ratio), self.canvas_height))
-            elif pil_img.height < 50:
-                pil_img = pil_img.resize((int(pil_img.width * 6), int(pil_img.height * 6)))
-
-            self.ph_img = ImageTk.PhotoImage(pil_img)
-
-            self.preview_instance = tk.Canvas(
-                self.preview_labelframe,
-                bg="#595959",
-                width=self.canvas_width,
-                height=self.canvas_height,
-            )
-            self.preview_instance.create_image(
-                self.canvas_width / 2,
-                self.canvas_height / 2,
-                anchor="center",
-                image=self.ph_img,
-            )
-            self.preview_instance.place(x=5, y=5)
-
-        except Exception as error:
-            logger.error(f"Error occurred while generating preview palette... Error: {error}")
-
     def draw_red_rectangle(self, selected_row_data: list) -> None:
-        if self.gui_main.ea_font_file.ff_format == 0:  # Character12
-            width = selected_row_data[1]
-            height = selected_row_data[2]
-            u = selected_row_data[3]
-            v = selected_row_data[4]
-        else:
-            raise Exception("Character format not supported!")
+        width = int(selected_row_data[1])
+        height = int(selected_row_data[2])
+        u = int(selected_row_data[3])
+        v = int(selected_row_data[4])
 
         if self.preview_instance and self.canvas_image_id and isinstance(self.preview_instance, tk.Canvas):
             if self.red_rectangle_id:

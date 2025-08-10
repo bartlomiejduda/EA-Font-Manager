@@ -4,7 +4,7 @@ from typing import Optional
 
 @dataclass
 class Character12Entry:
-    index: int
+    index: str
     width: int
     height: int
     u: int

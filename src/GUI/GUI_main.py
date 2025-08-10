@@ -29,6 +29,7 @@ from src.EA_Font.constants import (
 )
 from src.EA_Font.ea_font_file import EAFontFile
 from src.EA_Font.font_dto.character12_entry import Character12Entry
+from src.EA_Font.font_dto.character16_entry import Character16Entry
 from src.GUI.about_window import AboutWindow
 from src.GUI.GUI_characters_table import GuiCharactersTable
 from src.GUI.GUI_entry_preview import GuiEntryPreview
@@ -255,7 +256,7 @@ class EAManGui:
         if self.ea_font_file.ff_format == 0:  # Character12
             self.character_table.character_table.headers(["Char Index", "Width", "Height", "U", "V", "Advance", "X-Offset", "Y-Offset", "NumKern"])
 
-            char_data = [[chr(getattr(char12, f.name)) if f.name == "index" else getattr(char12, f.name) for f in fields(Character12Entry)] for char12 in self.ea_font_file.character_entry_list]
+            char_data = [[getattr(char12, f.name) for f in fields(Character12Entry)] for char12 in self.ea_font_file.character_entry_list]
             self.character_table.character_table.set_sheet_data(char_data)
 
             self.character_table.character_table.column_width(0, 90)  # char index
@@ -270,6 +271,22 @@ class EAManGui:
 
         elif self.ea_font_file.ff_format == 1:  # Character16
             self.character_table.character_table.headers(["Char Index", "Width", "Height", "U", "V", "AdvanceY", "X-Offset", "Y-Offset", "NumKern", "KernIndex", "AdvanceX"])
+
+            char_data = [[getattr(char16, f.name) for f in fields(Character16Entry)] for char16 in self.ea_font_file.character_entry_list]
+            self.character_table.character_table.set_sheet_data(char_data)
+
+            self.character_table.character_table.column_width(0, 75)  # char index
+            self.character_table.character_table.column_width(1, 75)  # width
+            self.character_table.character_table.column_width(2, 75)  # height
+            self.character_table.character_table.column_width(3, 75)  # u
+            self.character_table.character_table.column_width(4, 75)  # v
+            self.character_table.character_table.column_width(5, 75)  # advance y
+            self.character_table.character_table.column_width(6, 75)  # x-offset
+            self.character_table.character_table.column_width(7, 75)  # y-offset
+            self.character_table.character_table.column_width(8, 75)  # numkern
+            self.character_table.character_table.column_width(9, 75)  # kern index
+            self.character_table.character_table.column_width(10, 75)  # advance x
+
         else:
             raise Exception("Unknown format flag value!")
 
