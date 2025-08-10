@@ -92,17 +92,17 @@ def handle_image_swizzle_logic(
             pass  # swizzling handled by GST decoder
         elif entry_type == 30:  # for WII games (DXT1/CMPR textures)
             pass  # swizzling handled by N64 decoder
-        elif ea_img_signature in ("SHPX", "ShpX", "SHPI", "ShpF"):  # for XBOX and PC games
+        elif ea_img_signature in ("FNTX", "FntX", "FNTI", "FntF"):  # for XBOX and PC games
             if not swizzle_flag:
                 image_data = unswizzle_morton(image_data, img_width, img_height, get_bpp_for_image_type(entry_type))
             else:
                 image_data = swizzle_morton(image_data, img_width, img_height, get_bpp_for_image_type(entry_type))
-        elif ea_img_signature in ("SHPM", "ShpM"):  # for PSP games
+        elif ea_img_signature in ("FNTM", "FntM"):  # for PSP games
             if not swizzle_flag:
                 image_data = unswizzle_psp(image_data, img_width, img_height, get_bpp_for_image_type(entry_type))
             else:
                 image_data = swizzle_psp(image_data, img_width, img_height, get_bpp_for_image_type(entry_type))
-        elif ea_img_signature in ("SHPS", "ShpS") and (
+        elif ea_img_signature in ("FNTS", "FntS") and (
             entry_type < 8 or entry_type > 15
         ):  # for PS2 games (standard textures)
             bpp = get_bpp_for_image_type(entry_type)
@@ -113,7 +113,7 @@ def handle_image_swizzle_logic(
                     image_data = swizzle_ps2(image_data, img_width, img_height, bpp, swizzle_type=1)
             else:
                 logger.warning(f"PS2 unswizzle for bpp {bpp} is not supported yet!")
-        elif ea_img_signature in ("SHPG", "ShpG"):  # for WII/GameCube games
+        elif ea_img_signature in ("FNTG", "FntG"):  # for WII/GameCube games
             if not swizzle_flag:
                 image_data = unswizzle_gamecube(image_data, img_width, img_height, get_bpp_for_image_type(entry_type))
             else:
