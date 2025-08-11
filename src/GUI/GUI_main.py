@@ -9,16 +9,20 @@ import tkinter as tk
 from configparser import ConfigParser
 from dataclasses import fields
 from tkinter import filedialog, messagebox
+from typing import Optional
 
 from reversebox.common.common import (
     convert_int_to_hex_string,
+    get_file_extension,
     get_file_extension_uppercase,
 )
 from reversebox.common.logger import get_logger
 from reversebox.compression.compression_refpack import RefpackHandler
 from reversebox.image.pillow_wrapper import PillowWrapper
+from reversebox.io_files.bytes_helper_functions import set_uint8, set_uint16
 
 from src.EA_Font.constants import (
+    IMPORT_IMAGES_SUPPORTED_TYPES,
     NEW_SHAPE_ALLOWED_SIGNATURES,
     OLD_SHAPE_ALLOWED_SIGNATURES,
     baseline_flags_mapping,
@@ -27,7 +31,9 @@ from src.EA_Font.constants import (
     format_flags_mapping,
     orientation_flags_mapping,
 )
+from src.EA_Font.dto import EncodeInfoDTO
 from src.EA_Font.ea_font_file import EAFontFile
+from src.EA_Font.ea_image_encoder import encode_ea_image
 from src.EA_Font.font_dto.character12_entry import Character12Entry
 from src.EA_Font.font_dto.character16_entry import Character16Entry
 from src.GUI.about_window import AboutWindow
@@ -293,6 +299,104 @@ class EAManGui:
         in_file.close()
         return  # file opened successfully
 
+    def save_file_as(self):
+        ea_font: EAFontFile = self.ea_font_file
+        ea_font_memory_file = io.BytesIO(ea_font.total_f_data)
+
+        # replace image with import data
+        for ea_dir in ea_font.dir_entry_list:
+            if ea_dir.entry_import_flag:
+                ea_font_memory_file.seek(ea_dir.raw_data_offset)
+                ea_font_memory_file.write(ea_dir.raw_data)
+
+                for bin_attach in ea_dir.bin_attachments_list:
+                    if bin_attach.import_flag:
+                        ea_font_memory_file.seek(bin_attach.raw_data_offset)
+                        ea_font_memory_file.write(bin_attach.raw_data)
+
+        # replace character table
+        ea_font_memory_file.seek(ea_font.fh_char_info_offset)
+        char_table_data: bytes = b''
+
+        character_table_data = self.character_table.character_table.get_sheet_data()
+
+        for char_entry in character_table_data:
+            char_entry_data: bytes = b''
+            if self.ea_font_file.ff_format == 0:  # Character12
+                char_entry_data += set_uint16(ord(char_entry[0]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[1]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[2]), ea_font.f_endianess)
+                char_entry_data += set_uint16(int(char_entry[3]), ea_font.f_endianess)
+                char_entry_data += set_uint16(int(char_entry[4]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[5]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[6]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[7]), ea_font.f_endianess)
+                if ea_font.fh_file_version >= 200:
+                    char_entry_data += set_uint8(int(char_entry[8]), ea_font.f_endianess)
+                if len(char_entry_data) not in (11, 12):
+                    raise Exception(f"Error while saving char12 data for char_index={char_entry[0]}")
+            elif self.ea_font_file.ff_format == 1:  # Character16
+                char_entry_data += set_uint16(ord(char_entry[0]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[1]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[2]), ea_font.f_endianess)
+                char_entry_data += set_uint16(int(char_entry[3]), ea_font.f_endianess)
+                char_entry_data += set_uint16(int(char_entry[4]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[5]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[6]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[7]), ea_font.f_endianess)
+                char_entry_data += set_uint8(int(char_entry[8]), ea_font.f_endianess)
+                char_entry_data += set_uint16(int(char_entry[9]), ea_font.f_endianess)
+                char_entry_data += set_uint16(int(char_entry[10]), ea_font.f_endianess)
+                if len(char_entry_data) != 16:
+                    raise Exception(f"Error while saving char16 data for char_index={char_entry[0]}")
+            else:
+                raise Exception("Not supported char entry!")
+
+            char_table_data += char_entry_data
+        ea_font_memory_file.write(char_table_data)
+
+        # save dialog logic
+        logger.info(f"Opening save file dialog for file {ea_font.f_name}...")
+        out_file_extension: str = get_file_extension(ea_font.f_path)
+        out_file = None
+        try:
+            out_file = filedialog.asksaveasfile(
+                mode="wb",
+                defaultextension=out_file_extension,
+                initialdir=self.current_save_directory_path,
+                initialfile=ea_font.f_name,
+                filetypes=(("EA Font File", f"*{out_file_extension}"),),
+            )
+            try:
+                selected_directory = os.path.dirname(out_file.name)
+            except Exception:
+                selected_directory = ""
+            self.current_save_directory_path = selected_directory  # set directory path from history
+            self.user_config.set(
+                "config", "save_directory_path", selected_directory
+            )  # save directory path to config file
+            with open(self.user_config_file_name, "w") as configfile:
+                self.user_config.write(configfile)
+        except Exception as error:
+            logger.error(f"Error: {error}")
+            messagebox.showwarning("Warning", "Failed to save file!")
+        if out_file is None:
+            return False  # user closed file dialog on purpose
+
+        # Saving data
+        ea_font_memory_file.seek(0)
+        out_data: Optional[bytes] = ea_font_memory_file.read()
+        if not out_data:
+            logger.error("Empty data to export!")
+            messagebox.showwarning("Warning", "Empty data! Export not possible!")
+            return False
+
+        out_file.write(out_data)
+        out_file.close()
+        messagebox.showinfo("Info", "File saved successfully!")
+        logger.info(f"EA Font has been exported successfully to {out_file.name}")
+        return True
+
     def export_font_image(self) -> bool:
         ea_dir = self.ea_font_file.dir_entry_list[0]
         out_file = None
@@ -336,6 +440,73 @@ class EAManGui:
         out_file.close()
         messagebox.showinfo("Info", "File saved successfully!")
         logger.info(f"Image has been exported successfully to {out_file.name}")
+        return True
+
+    def import_font_image(self) -> bool:
+        ea_font: EAFontFile = self.ea_font_file
+
+        ea_dir = self.ea_font_file.dir_entry_list[0]
+        if ea_dir.h_record_id not in IMPORT_IMAGES_SUPPORTED_TYPES:
+            messagebox.showwarning("Warning", f"Image type {ea_dir.h_record_id} is not supported for IMPORT!")
+            return False
+
+        try:
+            in_file = filedialog.askopenfile(
+                filetypes=self.allowed_import_image_filetypes, mode="rb", initialdir=self.current_open_directory_path
+            )
+            if not in_file:
+                return False
+            try:
+                selected_directory = os.path.dirname(in_file.name)
+            except Exception:
+                selected_directory = ""
+            self.current_open_directory_path = selected_directory  # set directory path from history
+            self.user_config.set(
+                "config", "open_directory_path", selected_directory
+            )  # save directory path to config file
+            with open(self.user_config_file_name, "w") as configfile:
+                self.user_config.write(configfile)
+            in_file_path = in_file.name
+        except Exception as error:
+            logger.error(f"Failed to open file! Error: {error}")
+            messagebox.showwarning("Warning", "Failed to open file!")
+            return False
+
+        # import logic (raw data replace)
+        rgba_data: bytes = PillowWrapper().get_pil_rgba_data_for_import(in_file_path)
+        encode_info_dto: EncodeInfoDTO = encode_ea_image(rgba_data, ea_dir, ea_font, self)
+
+        if len(encode_info_dto.encoded_img_data) != len(ea_dir.raw_data):
+            message: str = (f"Image data for import doesn't match. Can't import image! "
+                            f"New data size: {len(encode_info_dto.encoded_img_data)}, "
+                            f"Old data size: {len(ea_dir.raw_data)}")
+            messagebox.showwarning("Warning", message)
+            logger.error(message)
+            return False
+
+        ea_dir.raw_data = encode_info_dto.encoded_img_data
+        ea_dir.entry_import_flag = True
+
+        # replace palette data
+        if encode_info_dto.is_palette_imported_flag:
+            for bin_attach_entry in ea_dir.bin_attachments_list:
+                if bin_attach_entry.h_record_id == encode_info_dto.palette_entry_id:
+                    bin_attach_entry.raw_data = encode_info_dto.encoded_palette_data
+                    bin_attach_entry.import_flag = True
+
+        # preview update logic start
+        if len(ea_dir.img_convert_data) != len(rgba_data):
+            message: str = f"Wrong size of image preview data! Convert_data_size: {len(ea_dir.img_convert_data)}, Rgba_data_size: {len(rgba_data)}"
+            # messagebox.showwarning("Warning", message)
+            logger.error(message)
+            # return False  # TODO - uncomment this after adding support for mipmaps?
+
+        # preview update
+        logger.info("Preview update for imported image")
+        ea_font.convert_image_data_for_export_and_preview(ea_dir, ea_dir.h_record_id, self)
+        self.entry_preview.init_image_preview_logic(ea_dir, "item_iid")  # refresh preview for imported image
+
+        logger.info("Image has been imported successfully")
         return True
 
     def show_about_window(self):
