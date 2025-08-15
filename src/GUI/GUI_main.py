@@ -72,7 +72,7 @@ class EAManGui:
         self.checkmark_path = self.MAIN_DIRECTORY + "\\data\\img\\checkmark.png"
         self.checkmark_image = None
         self.current_mipmaps_resampling = tk.StringVar(value="nearest")
-        self.ea_font_file: EAFontFile = EAFontFile()
+        self.ea_font_file: Optional[EAFontFile] = None
 
         try:
             self.master.iconbitmap(self.icon_path)
@@ -299,7 +299,12 @@ class EAManGui:
         in_file.close()
         return  # file opened successfully
 
-    def save_file_as(self):
+    def save_file_as(self) -> bool:
+        if not self.ea_font_file:
+            logger.warn("Font file is not opened yet...")
+            messagebox.showwarning("Warning", "Font file is not opened yet!")
+            return False
+
         ea_font: EAFontFile = self.ea_font_file
         ea_font_memory_file = io.BytesIO(ea_font.total_f_data)
 
@@ -398,6 +403,11 @@ class EAManGui:
         return True
 
     def export_font_image(self) -> bool:
+        if not self.ea_font_file:
+            logger.warn("Font file is not opened yet...")
+            messagebox.showwarning("Warning", "Font file is not opened yet!")
+            return False
+
         ea_dir = self.ea_font_file.dir_entry_list[0]
         out_file = None
         try:
@@ -443,6 +453,11 @@ class EAManGui:
         return True
 
     def import_font_image(self) -> bool:
+        if not self.ea_font_file:
+            logger.warn("Font file is not opened yet...")
+            messagebox.showwarning("Warning", "Font file is not opened yet!")
+            return False
+
         ea_font: EAFontFile = self.ea_font_file
 
         ea_dir = self.ea_font_file.dir_entry_list[0]

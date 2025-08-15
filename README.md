@@ -5,14 +5,15 @@ List of functionalities:
  - Parsing EA Font files
  - Preview for font images
  - Decoding and viewing font flags
- - Viewing character table
+ - Viewing/Editing character table
  - Exporting font images as DDS, PNG or BMP
+ - Importing font images from DDS, PNG or BMP
 
 
 This program **<ins>is still in development stage</ins>**.
 It may not support all existing font types yet.
 
-<img src="src\data\img\usage.png">
+<img src="src\data\img\usage.gif">
 
 # Dependencies
 
@@ -38,26 +39,35 @@ It may not support all existing font types yet.
 
 # Font formats support table
 
-| Game Title                                      | Preview/Export support  | Import support     |
-|-------------------------------------------------|-------------------------|--------------------|
-| EA Sports Cricket 07 (PC)                       | <center>✔️</center>     | <center>❌</center> |
-| FA Premier League 2000 (PS1)                    | <center>✔️ / ❌</center> | <center>❌</center> |
-| FIFA 97 (PC)                                    | <center>✔️ / ❌</center> | <center>❌</center> |
-| Harry Potter and the Chamber of Secrets (PS2)   | <center>✔️</center>     | <center>❌</center> |
-| Medal of Honor: European Assault (Xbox Classic) | <center>✔️</center>     | <center>❌</center> |
-| NBA Live 07 (Xbox Classic)                      | <center>✔️</center>     | <center>❌</center> |
-| Need For Speed 2 (PS1)                          | <center>✔️ / ❌</center> | <center>❌</center> |
-| Need For Speed 2 BETA (PC)                      | <center>✔️ / ❌</center> | <center>❌</center> |
-| Need For Speed: High Stakes (PC)                | <center>✔️ / ❌</center> | <center>❌</center> |
-| Need For Speed: Hot Pursuit 2 (PC)              | <center>✔️ / ❌</center> | <center>❌</center> |
-| Need For Speed III: Hot Pursuit (PC)            | <center>✔️ / ❌</center> | <center>❌</center> |
-| Need For Speed: Porsche Unleashed (PC)          | <center>✔️ / ❌</center> | <center>❌</center> |
-| Need For Speed: Undercover (PSP)                | <center>✔️</center>     | <center>❌</center> |
-| SSX 1 (PS2)                                     | <center>✔️ / ❌</center> | <center>❌</center> |
-| SSX 3 (PS2)                                     | <center>✔️ / ❌</center> | <center>❌</center> |
-| SSX On Tour (PS2)                               | <center>✔️</center>     | <center>❌</center> |
-| SSX Tricky (PS2)                                | <center>✔️ / ❌</center> | <center>❌</center> |
-| Triple Play 2002 (PS2)                          | <center>✔️ / ❌</center> | <center>❌</center> |
+Table below isn't complete. It contains only some example games that I was able to test.
+If you know any other EA game that is supported by my tool, please let me know on GitHub's
+"Issues" tab.
+
+| Game Title                                      | Preview/Export support  | Import support      |
+|-------------------------------------------------|-------------------------|---------------------|
+| Def Jam: Fight for NY (PS2)                     | <center>✔️</center>     | <center>✔️</center> |
+| EA Sports Cricket 07 (PC)                       | <center>✔️</center>     | <center>✔️</center> |
+| FA Premier League 2000 (PS1)                    | <center>✔️ / ❌</center> | <center>❌</center>  |
+| FIFA 97 (PC)                                    | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Harry Potter and the Chamber of Secrets (PS2)   | <center>✔️</center>     | <center>✔️</center> |
+| Medal of Honor: European Assault (Xbox Classic) | <center>✔️</center>     | <center>❌</center>  |
+| MVP Baseball 2005 (PS2)                         | <center>✔️</center>     | <center>✔️</center> |
+| NBA Live 06 (PC)                                | <center>✔️</center>     | <center>✔️</center> |
+| NBA Live 07 (Xbox Classic)                      | <center>✔️</center>     | <center>❌</center>  |
+| Need For Speed 2 (PS1)                          | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Need For Speed 2 BETA (PC)                      | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Need For Speed: High Stakes (PC)                | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Need For Speed: Hot Pursuit 2 (PC)              | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Need For Speed III: Hot Pursuit (PC)            | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Need For Speed: Porsche Unleashed (PC)          | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Need For Speed: Undercover (PSP)                | <center>✔️</center>     | <center>✔️</center> |
+| NHL 99 (PS1)                                    | <center>✔️ / ❌</center> | <center>❌</center>  |
+| SSX 1 (PS2)                                     | <center>✔️ / ❌</center> | <center>❌</center>  |
+| SSX 3 (PS2)                                     | <center>✔️ / ❌</center> | <center>❌</center>  |
+| SSX On Tour (PS2)                               | <center>✔️</center>     | <center>✔️</center> |
+| SSX Tricky (PS2)                                | <center>✔️ / ❌</center> | <center>❌</center>  |
+| The Sims: Complete Collection (PC)              | <center>✔️ / ❌</center> | <center>❌</center>  |
+| Triple Play 2002 (PS2)                          | <center>✔️ / ❌</center> | <center>❌</center>  |
 
 
 # Badges
