@@ -205,13 +205,13 @@ def decode_image_data_by_entry_type(
             image_data, ea_dir_entry.h_width, ea_dir_entry.h_height, ImageFormats.XRGB1555
         )  # palette
     elif entry_type == 64:
-        return ea_image_decoder.decode_indexed_image(
-            image_data,
-            palette_info_dto.data,
+        # TODO - fix padding issue
+        return ea_image_decoder.decode_image(
+            image_data + b"\x00" * 1000,
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            get_indexed_image_format(get_bpp_for_image_type(entry_type)),
-            get_indexed_palette_format(palette_info_dto.entry_id, len(palette_info_dto.data)),
+            ImageFormats.RAWBMP2_PS2,
+            image_endianess="big",
         )
     elif entry_type == 65:
         return ea_image_decoder.decode_indexed_image(
@@ -322,13 +322,12 @@ def decode_image_data_by_entry_type(
             get_indexed_palette_format(palette_info_dto.entry_id, len(palette_info_dto.data)),
         )
     elif entry_type == 122:
-        return ea_image_decoder.decode_indexed_image(
-            image_data,
-            palette_info_dto.data,
+        # TODO - fix padding issue
+        return ea_image_decoder.decode_image(
+            image_data + b"\x00" * 1000,
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            get_indexed_image_format(get_bpp_for_image_type(entry_type)),
-            get_indexed_palette_format(palette_info_dto.entry_id, len(palette_info_dto.data)),
+            ImageFormats.RAWBMP2_PS2,
             image_endianess="big",
         )
     elif entry_type == 123:

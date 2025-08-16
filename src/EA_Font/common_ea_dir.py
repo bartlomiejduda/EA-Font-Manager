@@ -67,7 +67,7 @@ def get_palette_info_dto_from_dir_entry(_ea_dir_entry: DirEntry, ea_image) -> Pa
 
     logger.warn("Warning! Couldn't find palette data!")
     return PaletteInfoDTO(
-        entry_id=_entry_id, data=bytes(ea_default_palette_data), swizzle_flag=False
+        entry_id=-1, data=bytes(ea_default_palette_data), swizzle_flag=False
     )  # return default palette if no palette has been found
 
 
