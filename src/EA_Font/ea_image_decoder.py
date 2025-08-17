@@ -210,7 +210,7 @@ def decode_image_data_by_entry_type(
             image_data + b"\x00" * 1000,
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            ImageFormats.RAWBMP2_PS2,
+            ImageFormats.ALPHA4_16X,
             image_endianess="big",
         )
     elif entry_type == 65:
@@ -327,7 +327,7 @@ def decode_image_data_by_entry_type(
             image_data + b"\x00" * 1000,
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            ImageFormats.RAWBMP2_PS2,
+            ImageFormats.ALPHA4_16X,
             image_endianess="big",
         )
     elif entry_type == 123:
