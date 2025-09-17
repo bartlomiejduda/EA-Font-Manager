@@ -15,6 +15,8 @@ It may not support all existing font types yet.
 
 <img src="src\data\img\usage.gif">
 
+EA Font file format description can be found on [RE Wiki](https://rewiki.miraheze.org/wiki/EA_FFN_SFN_Font).
+
 # Dependencies
 
 * **[ReverseBox](https://github.com/bartlomiejduda/ReverseBox)**
