@@ -8,6 +8,7 @@ from typing import Optional
 from reversebox.common.logger import get_logger
 from reversebox.image.image_decoder import ImageDecoder
 from reversebox.image.image_formats import ImageFormats
+from reversebox.image.common import get_linear_image_data_size, get_bpp_for_image_format
 
 from src.EA_Font.common import (
     get_bpp_for_image_type,
@@ -39,7 +40,7 @@ def decode_image_data_by_entry_type(
 
         if len(palette_info_dto.data) == 0:
             logger.error("Error while converting palette data for type 2!")
-            return
+            return None
 
         return ea_image_decoder.decode_indexed_image(
             image_data,
@@ -210,7 +211,7 @@ def decode_image_data_by_entry_type(
             image_data + b"\x00" * 1000,
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            ImageFormats.ALPHA4_16X,
+            ImageFormats.ALPHA4_17X,
             image_endianess="big",
         )
     elif entry_type == 65:
@@ -276,7 +277,7 @@ def decode_image_data_by_entry_type(
         )
     elif entry_type == 100:
         return ea_image_decoder.decode_image(
-            image_data, ea_dir_entry.h_width, ea_dir_entry.h_height, ImageFormats.N64_I8
+            image_data, ea_dir_entry.h_width, ea_dir_entry.h_height, ImageFormats.N64_IA8
         )
     elif entry_type == 101:
         return ea_image_decoder.decode_n64_image(
@@ -322,12 +323,20 @@ def decode_image_data_by_entry_type(
             get_indexed_palette_format(palette_info_dto.entry_id, len(palette_info_dto.data)),
         )
     elif entry_type == 122:
-        # TODO - fix padding issue
-        return ea_image_decoder.decode_image(
-            image_data + b"\x00" * 1000,
+        expected_size = get_linear_image_data_size(
+            get_bpp_for_image_format(ImageFormats.ALPHA4_17X),
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            ImageFormats.ALPHA4_16X,
+        )
+
+        if len(image_data) < expected_size:
+            image_data = image_data + b"\x00" * (expected_size - len(image_data))
+
+        return ea_image_decoder.decode_image(
+            image_data,
+            ea_dir_entry.h_width,
+            ea_dir_entry.h_height,
+            ImageFormats.ALPHA4_17X,
             image_endianess="big",
         )
     elif entry_type == 123:
@@ -355,4 +364,4 @@ def decode_image_data_by_entry_type(
         )
     else:
         logger.error(f"Unsupported type {entry_type} for convert and preview!")
-        return
+        return None

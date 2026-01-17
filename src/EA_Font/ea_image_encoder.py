@@ -289,6 +289,14 @@ def encode_image_data_by_entry_type(
             max_color_count=16,
             number_of_mipmaps=mipmaps_count,
         )
+    elif entry_type == 122:
+        encoded_image_data = image_encoder.encode_image(
+            rgba8888_data,
+            img_width,
+            img_height,
+            ImageFormats.ALPHA4_17X,
+            image_endianess="big",
+        )
     elif entry_type == 123:
         encoded_image_data, encoded_palette_data = image_encoder.encode_indexed_image(
             rgba8888_data,

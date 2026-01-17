@@ -26,7 +26,7 @@ class GuiEntryPreview(tk.Frame):
         self.canvas_image_id: Optional[int] = None
         self.red_rectangle_id: Optional[int] = None
         self.ratio: float = 1.0
-        self.preview_instance: Optional[tk.Canvas] = None
+        self.preview_instance: Optional[tk.Canvas, tk.Label] = None
 
     def init_image_preview_logic(self, ea_dir, item_iid):
         if not ea_dir.img_convert_data or len(ea_dir.img_convert_data) == 0:

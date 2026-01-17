@@ -15,7 +15,7 @@ as a standalone executable.
 
 
 # Running the program #
-You can simply run this program by double clicking
+You can simply run this program by double-clicking
 on the EXE file.
 It was built to run on Windows x64 machines.
 
