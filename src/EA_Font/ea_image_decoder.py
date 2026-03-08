@@ -210,7 +210,7 @@ def decode_image_data_by_entry_type(
             image_data + b"\x00" * 1000,
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            ImageFormats.ALPHA4_16X,
+            ImageFormats.ALPHA4_17X,
             image_endianess="big",
         )
     elif entry_type == 65:
@@ -276,7 +276,7 @@ def decode_image_data_by_entry_type(
         )
     elif entry_type == 100:
         return ea_image_decoder.decode_image(
-            image_data, ea_dir_entry.h_width, ea_dir_entry.h_height, ImageFormats.N64_I8
+            image_data, ea_dir_entry.h_width, ea_dir_entry.h_height, ImageFormats.GRAY8
         )
     elif entry_type == 101:
         return ea_image_decoder.decode_n64_image(
@@ -327,7 +327,7 @@ def decode_image_data_by_entry_type(
             image_data + b"\x00" * 1000,
             ea_dir_entry.h_width,
             ea_dir_entry.h_height,
-            ImageFormats.ALPHA4_16X,
+            ImageFormats.ALPHA4_17X,
             image_endianess="big",
         )
     elif entry_type == 123:
